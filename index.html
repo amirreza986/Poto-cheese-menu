@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POTO CHEESE | Crispy &amp; Cheesy</title>
+  <meta name="description" content="POTO CHEESE fast food menu with order basket" />
+
+  <link rel="icon" type="image/png" href="images/brand/logo-2.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Vazirmatn:wght@300..700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <header class="top-bar">
+    <div class="container top-bar-inner">
+      <div class="brand">
+        <div class="logo-box">
+          <span class="logo-fallback">🧀</span>
+          <img class="logo-dark" src="images/brand/logo-2.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
+          <img class="logo-light" src="images/brand/logo-1.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
+        </div>
+        <div class="brand-text">
+          <h1 id="restaurantNameEn">POTO CHEESE</h1>
+          <p id="brandSub">FAST FOOD &amp; CHEESE</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button id="themeToggle" class="btn btn-outline icon-btn" type="button" aria-label="تغییر حالت روشن/تاریک">
+          ☀️
+        </button>
+
+        <button id="cartButton" class="btn btn-outline icon-btn" type="button" aria-label="سبد سفارش">
+          🛒
+          <span id="cartBadge" class="cart-badge" hidden>۰</span>
+        </button>
+
+        <a id="callButton" class="btn btn-outline" href="#">
+          📞 تماس
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="logo-box logo-hero">
+        <span class="logo-fallback">🧀</span>
+        <img class="logo-dark" src="images/brand/logo-2.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
+        <img class="logo-light" src="images/brand/logo-1.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
+      </div>
+
+      <span class="hero-line-1" id="heroLine1" dir="ltr">Crispy Flavor,</span>
+      <span class="hero-line-2" id="heroLine2" dir="ltr">Delivered Fast</span>
+      <div class="hero-rule"></div>
+      <p class="hero-sub" id="heroSub" dir="ltr">POTO CHEESE · FAST FOOD &amp; CHEESE</p>
+    </div>
+  </section>
+
+  <section class="search-section">
+    <div class="container">
+      <div class="search-wrap">
+        <span>🔎</span>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="جستجوی غذا... / Search meals..."
+          aria-label="جستجو در منو"
+          autocomplete="off"
+        />
+        <button id="clearSearch" type="button" aria-label="پاک کردن جستجو">×</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories-section">
+    <div class="container">
+      <div class="categories" id="categoryChips" role="tablist" aria-label="دسته‌بندی غذاها"></div>
+    </div>
+  </section>
+
+  <main class="menu-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h3>غذاهای ویژه</h3>
+        <span dir="ltr">Signature Dishes</span>
+      </div>
+
+      <div class="results-info" id="resultsInfo"></div>
+
+      <div class="menu-grid" id="menuGrid"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div>😕</div>
+        <p>موردی پیدا نشد.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <p id="address">آدرس رستوران: تهران، خیابان نمونه، پلاک ۱</p>
+      <p id="footerHours">ساعت کاری: ۱۲ تا ۳</p>
+      <p class="small">دسترسی آسان مشتریان با QR Code</p>
+    </div>
+  </footer>
+
+  <!-- سبد خرید کشویی -->
+  <div id="cartOverlay" class="cart-overlay" hidden></div>
+
+  <aside id="cartDrawer" class="cart-drawer" aria-hidden="true" aria-label="سبد سفارش">
+    <div class="cart-head">
+      <h3>سفارش شما <span dir="ltr">Your Order</span></h3>
+      <button id="cartClose" class="btn btn-outline icon-btn" type="button" aria-label="بستن سبد">×</button>
+    </div>
+
+    <div class="cart-body" id="cartBody"></div>
+
+    <div class="cart-foot">
+      <div class="cart-total">
+        <div>جمع کل</div>
+        <span id="cartTotal">۰ تومان</span>
+      </div>
+      <p class="cart-note">این صفحه را به صندوقدار نشان دهید.</p>
+      <button id="cartClear" class="btn btn-outline" type="button">🗑 پاک کردن سبد</button>
+    </div>
+  </aside>
+
+  <script src="js/menu-data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
