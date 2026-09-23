@@ -1,7 +1,7 @@
 /* =====================================================
-   تم برند POTO CHEESE — سبز تیره + کرم + طلایی
+   تم برند POTO CHEESE
+   فونت فارسی: Vazirmatn (درشت و خوانا)
    فونت انگلیسی نمایشی: Playfair Display
-   فونت فارسی: B Nazanin (با جایگزین Vazirmatn)
    ===================================================== */
 
 :root {
@@ -18,7 +18,7 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   --radius: 16px;
 
-  --font-fa: "B Nazanin", "Vazirmatn", Tahoma, sans-serif;
+  --font-fa: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
   --font-en: "Playfair Display", Georgia, "Times New Roman", serif;
 }
 
@@ -47,14 +47,11 @@ html {
 body {
   margin: 0;
   font-family: var(--font-fa);
+  font-size: 16px;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.8;
-  transition: background 0.25s ease, color 0.25s ease;
-}
-
-body.no-scroll {
-  overflow: hidden;
+  line-height: 1.9;
+  transition: background 0.25s ease, color 0.25s ease, padding 0.3s ease;
 }
 
 .container {
@@ -62,7 +59,6 @@ body.no-scroll {
   margin-inline: auto;
 }
 
-/* ---------- اصلاح جهت متن انگلیسی در چیدمان راست‌چین ---------- */
 .hero-sub,
 .card-title-en,
 .chip-en,
@@ -163,9 +159,10 @@ body.no-scroll {
   gap: 6px;
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 9px 14px;
+  padding: 10px 16px;
   font: inherit;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   color: var(--text);
@@ -197,11 +194,11 @@ a:focus-visible {
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   padding: 0;
   border-radius: 12px;
-  font-size: 17px;
+  font-size: 18px;
   position: relative;
 }
 
@@ -211,7 +208,7 @@ a:focus-visible {
   inset-inline-start: -5px;
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   min-width: 18px;
   height: 18px;
@@ -221,7 +218,7 @@ a:focus-visible {
   padding: 0 4px;
 }
 
-/* ---------- هیرو (فقط انگلیسی، فونت نمایشی بزرگ) ---------- */
+/* ---------- هیرو ---------- */
 .hero {
   background:
     radial-gradient(circle at 80% 10%, var(--accent-soft), transparent 55%),
@@ -306,6 +303,7 @@ a:focus-visible {
   color: var(--text);
   padding: 14px 0;
   font: inherit;
+  font-size: 15px;
   outline: none;
   min-width: 0;
 }
@@ -337,7 +335,7 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 14px 6px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -348,13 +346,30 @@ a:focus-visible {
   transition: 0.15s ease;
 }
 
+.chip-icon-box {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+}
+
 .chip-emoji {
-  font-size: 24px;
+  font-size: 26px;
+}
+
+.chip-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 .chip-fa {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   text-align: center;
 }
 
@@ -397,7 +412,8 @@ a:focus-visible {
 
 .section-header h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: 800;
 }
 
 .section-header span:not(.section-num) {
@@ -409,13 +425,13 @@ a:focus-visible {
 
 .results-info {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 14px;
 }
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 14px;
 }
 
@@ -476,7 +492,7 @@ a:focus-visible {
 }
 
 .badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 6px;
@@ -509,8 +525,8 @@ a:focus-visible {
 
 .card-title-fa {
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   line-height: 1.5;
 }
 
@@ -525,8 +541,8 @@ a:focus-visible {
 .desc {
   margin: 4px 0 8px;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.8;
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -544,19 +560,19 @@ a:focus-visible {
 .price {
   color: var(--accent);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .add-btn {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   border: 0;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: var(--on-accent);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   cursor: pointer;
   flex: 0 0 auto;
@@ -574,6 +590,7 @@ a:focus-visible {
   background: var(--surface);
   border: 1px dashed var(--border);
   border-radius: var(--radius);
+  font-size: 15px;
 }
 
 .empty-state div {
@@ -581,32 +598,31 @@ a:focus-visible {
   margin-bottom: 8px;
 }
 
-/* ---------- سبد خرید کشویی ---------- */
-.cart-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 55;
-}
-
+/* ---------- پنل سفارش ----------
+   موبایل: پنل پایینی (منو بالا قابل کلیک می‌ماند)
+   دسکتاپ: ستون چپ (منو سمت راست قابل کلیک می‌ماند)
+------------------------------------------------------ */
 .cart-drawer {
   position: fixed;
-  top: 0;
-  bottom: 0;
   left: 0;
-  width: min(380px, 92%);
+  right: 0;
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  max-height: 60vh;
   background: var(--surface);
-  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   z-index: 60;
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
+  transform: translateY(100%);
   transition: transform 0.3s ease;
 }
 
 .cart-drawer.open {
-  transform: translateX(0);
+  transform: translateY(0);
 }
 
 .cart-head {
@@ -620,7 +636,8 @@ a:focus-visible {
 
 .cart-head h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
+  font-weight: 800;
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -646,6 +663,7 @@ a:focus-visible {
   text-align: center;
   color: var(--muted);
   padding: 30px 10px;
+  font-size: 15px;
 }
 
 .cart-empty div {
@@ -655,7 +673,7 @@ a:focus-visible {
 
 .cart-line {
   display: grid;
-  grid-template-columns: 44px 1fr auto;
+  grid-template-columns: 46px 1fr auto;
   gap: 10px;
   align-items: center;
   background: var(--surface-2);
@@ -665,8 +683,8 @@ a:focus-visible {
 }
 
 .cart-thumb {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
   background: var(--bg);
@@ -675,8 +693,8 @@ a:focus-visible {
 }
 
 .cart-name-fa {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .cart-name-en {
@@ -686,7 +704,7 @@ a:focus-visible {
 }
 
 .cart-unit {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--accent);
   margin-top: 2px;
 }
@@ -698,20 +716,20 @@ a:focus-visible {
 }
 
 .cart-qty button {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 .cart-qty span {
   min-width: 18px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .cart-line-side {
@@ -722,8 +740,8 @@ a:focus-visible {
 }
 
 .cart-line-total {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--accent);
 }
 
@@ -745,7 +763,7 @@ a:focus-visible {
 .cart-total {
   display: flex;
   justify-content: space-between;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 800;
 }
 
@@ -756,7 +774,31 @@ a:focus-visible {
 .cart-note {
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
+}
+
+/* ---------- دسکتاپ: ستون چپ ---------- */
+@media (min-width: 900px) {
+  .cart-drawer {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 350px;
+    max-height: none;
+    border-radius: 0;
+    border-top: 0;
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+  }
+
+  .cart-drawer.open {
+    transform: translateX(0);
+  }
+
+  body.cart-open {
+    padding-left: 350px;
+  }
 }
 
 /* ---------- فوتر ---------- */
@@ -769,13 +811,13 @@ footer {
   padding: 20px 0;
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   display: grid;
   gap: 6px;
 }
 
 .small {
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.8;
 }
 
@@ -783,7 +825,7 @@ footer {
 @media (max-width: 640px) {
   .categories {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
 
@@ -792,12 +834,17 @@ footer {
     border-radius: 12px;
   }
 
+  .chip-icon-box {
+    width: 36px;
+    height: 36px;
+  }
+
   .chip-emoji {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .chip-fa {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .chip-en {
@@ -815,7 +862,7 @@ footer {
 
   .top-actions .btn:not(.icon-btn) {
     padding: 8px 10px;
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .logo-hero {
@@ -835,7 +882,6 @@ footer {
   .categories-section,
   .card-footer,
   .cart-drawer,
-  .cart-overlay,
   footer {
     display: none !important;
   }

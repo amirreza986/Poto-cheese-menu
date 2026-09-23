@@ -27,12 +27,19 @@ function escapeHtml(value) {
   });
 }
 
+const FA_DIGITS = {
+  "0": "۰", "1": "۱", "2": "۲", "3": "۳", "4": "۴",
+  "5": "۵", "6": "۶", "7": "۷", "8": "۸", "9": "۹"
+};
+
 function toFa(input) {
-  return String(input).replace(/\d/g, (digit) => "۰۱۲۴۵۶۷۸۹"[digit]);
+  return String(input).replace(/\d/g, (d) => FA_DIGITS[d]);
 }
 
 function formatPrice(price) {
-  const formatted = new Intl.NumberFormat("en-US").format(price);
+  const value = Number(price) || 0;
+  if (value === 0) return "رایگان";
+  const formatted = new Intl.NumberFormat("en-US").format(value);
   return toFa(formatted) + " " + config.currency;
 }
 
@@ -96,6 +103,7 @@ function addToCart(id) {
   cart[id] = (cart[id] || 0) + 1;
   saveCart();
   updateBadge();
+  openCart();
 }
 
 function changeQty(id, delta) {
@@ -131,20 +139,18 @@ function updateBadge() {
   badge.hidden = count === 0;
 }
 
-/* ---------- پنل کشویی سبد ---------- */
+/* ---------- پنل سفارش ---------- */
 function openCart() {
   renderCart();
+  document.body.classList.add("cart-open");
   $("#cartDrawer").classList.add("open");
   $("#cartDrawer").setAttribute("aria-hidden", "false");
-  $("#cartOverlay").hidden = false;
-  document.body.classList.add("no-scroll");
 }
 
 function closeCart() {
+  document.body.classList.remove("cart-open");
   $("#cartDrawer").classList.remove("open");
   $("#cartDrawer").setAttribute("aria-hidden", "true");
-  $("#cartOverlay").hidden = true;
-  document.body.classList.remove("no-scroll");
 }
 
 function renderCart() {
@@ -158,7 +164,7 @@ function renderCart() {
         <p>سبد شما خالی است.</p>
       </div>
     `;
-    $("#cartTotal").textContent = formatPrice(0);
+    $("#cartTotal").textContent = formatPrice(0) === "رایگان" ? "۰ " + config.currency : formatPrice(0);
     return;
   }
 
@@ -166,6 +172,8 @@ function renderCart() {
     .map(([id, qty]) => {
       const item = findItem(id);
       if (!item) return "";
+
+      const lineTotal = item.price * qty;
 
       return `
         <div class="cart-line">
@@ -183,7 +191,7 @@ function renderCart() {
               <span>${toFa(qty)}</span>
               <button type="button" data-inc="${item.id}" aria-label="افزایش تعداد">+</button>
             </div>
-            <div class="cart-line-total">${formatPrice(item.price * qty)}</div>
+            <div class="cart-line-total">${lineTotal === 0 ? "رایگان" : formatPrice(lineTotal)}</div>
             <button type="button" class="cart-remove" data-remove="${item.id}" aria-label="حذف">🗑</button>
           </div>
         </div>
@@ -194,7 +202,26 @@ function renderCart() {
   $("#cartTotal").textContent = formatPrice(cartTotal());
 }
 
-/* ---------- تم ---------- */
+/* ---------- تم: خودکار از گوشی + اولویت با انتخاب دستی ---------- */
+const darkQuery = window.matchMedia
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : null;
+
+function getDeviceTheme() {
+  if (darkQuery && darkQuery.matches) return "dark";
+  return "light";
+}
+
+function hasManualTheme() {
+  const saved = getStored("theme");
+  return saved === "dark" || saved === "light";
+}
+
+function currentTheme() {
+  if (hasManualTheme()) return getStored("theme");
+  return getDeviceTheme();
+}
+
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   const button = $("#themeToggle");
@@ -202,20 +229,32 @@ function applyTheme(theme) {
   button.setAttribute("aria-label", theme === "light" ? "حالت تاریک" : "حالت روشن");
 }
 
-const savedTheme = getStored("theme");
-applyTheme(savedTheme || "dark");
+applyTheme(currentTheme());
+
+if (darkQuery) {
+  const onDeviceThemeChange = () => {
+    if (!hasManualTheme()) {
+      applyTheme(getDeviceTheme());
+    }
+  };
+
+  if (darkQuery.addEventListener) {
+    darkQuery.addEventListener("change", onDeviceThemeChange);
+  } else if (darkQuery.addListener) {
+    darkQuery.addListener(onDeviceThemeChange);
+  }
+}
 
 $("#themeToggle").addEventListener("click", () => {
-  const current = document.documentElement.dataset.theme;
-  const next = current === "light" ? "dark" : "light";
+  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
   applyTheme(next);
   setStored("theme", next);
 });
 
-/* ---------- اطلاعات ثابت (بالای سایت فقط انگلیسی) ---------- */
+/* ---------- اطلاعات ثابت ---------- */
 document.title = config.restaurantNameEn + " | " + config.taglineEn;
 $("#restaurantNameEn").textContent = config.restaurantNameEn;
-$("#brandSub").textContent = config.brandSub;
+$("#brandSub").textContent = config.taglineEn;
 $("#heroLine1").textContent = config.heroLine1;
 $("#heroLine2").textContent = config.heroLine2;
 $("#heroSub").textContent = config.heroSub;
@@ -234,7 +273,7 @@ if (config.phoneTel) {
 function renderChips() {
   const wrap = $("#categoryChips");
   const allCategories = [
-    { id: "all", labelFa: "همه", labelEn: "All", emoji: "🍽️" },
+    { id: "all", labelFa: "همه", labelEn: "All", emoji: "🍽️", icon: config.allIcon },
     ...categories
   ];
 
@@ -248,7 +287,10 @@ function renderChips() {
           data-category="${category.id}"
           aria-selected="${isSelected}"
         >
-          <span class="chip-emoji">${category.emoji}</span>
+          <span class="chip-icon-box">
+            <span class="chip-emoji">${category.emoji}</span>
+            <img class="chip-icon" src="${escapeHtml(category.icon)}" alt="" onerror="this.style.display='none'" />
+          </span>
           <span class="chip-fa">${escapeHtml(category.labelFa)}</span>
           <span class="chip-en">${escapeHtml(category.labelEn)}</span>
         </button>
@@ -280,9 +322,6 @@ function renderMenu() {
   const filtered = getFilteredItems();
   const grid = $("#menuGrid");
   const emptyState = $("#emptyState");
-  const resultsInfo = $("#resultsInfo");
-
-  resultsInfo.textContent = `${toFa(filtered.length)} مورد یافت شد`;
 
   if (filtered.length === 0) {
     grid.innerHTML = "";
@@ -384,7 +423,6 @@ $("#menuGrid").addEventListener("click", (event) => {
 
 $("#cartButton").addEventListener("click", openCart);
 $("#cartClose").addEventListener("click", closeCart);
-$("#cartOverlay").addEventListener("click", closeCart);
 
 $("#cartBody").addEventListener("click", (event) => {
   const inc = event.target.closest("[data-inc]");
@@ -397,6 +435,10 @@ $("#cartBody").addEventListener("click", (event) => {
 });
 
 $("#cartClear").addEventListener("click", clearCart);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeCart();
+});
 
 /* ---------- اجرای اولیه ---------- */
 updateBadge();
