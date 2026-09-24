@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>پنل مدیریت | POTO CHEESE</title>
+  <link rel="icon" type="image/png" href="../images/brand/logo-2.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- صفحه ورود -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">🧀</div>
+      <h1>پنل مدیریت پوتو چیز</h1>
+      <p class="login-sub">برای ورود، توکن دسترسی GitHub را وارد کنید</p>
+      <input id="tokenInput" type="password" placeholder="github_pat_..." autocomplete="off" />
+      <button id="loginBtn" class="btn btn-primary" type="button">ورود به پنل</button>
+      <p id="loginError" class="error" hidden></p>
+
+      <details class="help">
+        <summary>راهنمای ساخت توکن</summary>
+        <ol>
+          <li>برو به: github.com/settings/personal-access-tokens/new</li>
+          <li>نام: poto-admin</li>
+          <li>Repository access: Only select repositories → Poto-cheese-menu</li>
+          <li>Repository permissions: Contents = Read and write</li>
+          <li>Generate token و کپی کن</li>
+        </ol>
+      </details>
+
+      <p class="security-note">🔒 توکن فقط در مرورگر خود شما ذخیره می‌شود. آن را با کسی به اشتراک نگذارید.</p>
+    </div>
+  </div>
+
+  <!-- صفحه مدیریت -->
+  <div id="adminScreen" hidden>
+    <header class="admin-header">
+      <div class="admin-title">
+        <span class="admin-logo">🧀</span>
+        <div>
+          <h1>پنل مدیریت پوتو چیز</h1>
+          <p>تغییرات پس از ذخیره، طی ۱ تا ۲ دقیقه روی سایت می‌نشیند</p>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <a class="btn btn-outline" href="../index.html" target="_blank">مشاهده سایت</a>
+        <button id="logoutBtn" class="btn btn-outline" type="button">خروج</button>
+      </div>
+    </header>
+
+    <div id="statusBar" class="status" hidden></div>
+
+    <main class="admin-main">
+      <div id="categoriesWrap"></div>
+
+      <section class="add-section">
+        <h2>➕ افزودن محصول جدید</h2>
+        <div class="add-grid">
+          <label>دسته
+            <select id="addCategory"></select>
+          </label>
+          <label>نام فارسی
+            <input id="addTitleFa" type="text" />
+          </label>
+          <label>نام انگلیسی
+            <input id="addTitleEn" type="text" />
+          </label>
+          <label>قیمت (تومان)
+            <input id="addPrice" type="number" min="0" step="1000" />
+          </label>
+          <label>ایموجی
+            <input id="addEmoji" type="text" value="🍽️" />
+          </label>
+          <label class="full">توضیح
+            <input id="addDesc" type="text" />
+          </label>
+        </div>
+        <button id="addBtn" class="btn btn-primary" type="button">افزودن محصول</button>
+      </section>
+    </main>
+
+    <div class="save-bar">
+      <button id="saveBtn" class="btn btn-primary btn-big" type="button">💾 ذخیره و انتشار روی سایت</button>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

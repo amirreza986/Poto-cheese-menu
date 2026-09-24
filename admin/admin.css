@@ -1,0 +1,275 @@
+:root {
+  --bg: #0c241a;
+  --surface: #123627;
+  --surface-2: #1a4433;
+  --text: #f2eee3;
+  --muted: #b9c6ba;
+  --accent: #e3b458;
+  --accent-2: #f0c878;
+  --on-accent: #123524;
+  --border: rgba(242, 238, 227, 0.14);
+  --danger: #c2334d;
+  --radius: 14px;
+  --font: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* ---------- دکمه‌ها ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: var(--on-accent);
+}
+
+.btn-outline { background: transparent; border-color: var(--border); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+
+.btn-small { padding: 6px 12px; font-size: 12px; }
+
+.btn-big { padding: 14px 30px; font-size: 16px; }
+
+/* ---------- صفحه ورود ---------- */
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: min(420px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.login-logo { font-size: 52px; }
+
+.login-card h1 { margin: 8px 0 4px; font-size: 22px; }
+
+.login-sub { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+
+#tokenInput {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-align: left;
+  direction: ltr;
+}
+
+.error {
+  background: var(--danger);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+.help {
+  margin-top: 16px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.help summary { cursor: pointer; color: var(--accent); }
+
+.help ol { padding-right: 18px; }
+
+.help code { color: var(--accent); direction: ltr; display: inline-block; }
+
+.security-note {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- صفحه مدیریت ---------- */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-title { display: flex; align-items: center; gap: 12px; }
+
+.admin-logo { font-size: 34px; }
+
+.admin-title h1 { margin: 0; font-size: 18px; }
+
+.admin-title p { margin: 0; color: var(--muted); font-size: 12px; }
+
+.admin-actions { display: flex; gap: 8px; }
+
+.status {
+  margin: 14px auto 0;
+  width: min(900px, calc(100% - 32px));
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--surface-2);
+}
+
+.status.ok { background: var(--accent); color: var(--on-accent); }
+
+.status.err { background: var(--danger); color: #fff; }
+
+.admin-main {
+  width: min(900px, calc(100% - 32px));
+  margin: 20px auto 100px;
+}
+
+.cat-block { margin-bottom: 26px; }
+
+.cat-block h2 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  border-right: 4px solid var(--accent);
+  padding-right: 10px;
+}
+
+.cat-block h2 span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.item-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.item-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.item-emoji { font-size: 24px; }
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.switch input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+.item-grid,
+.add-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+input,
+select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+  width: 100%;
+}
+
+.full { grid-column: 1 / -1; }
+
+.muted { color: var(--muted); }
+
+.small { font-size: 11px; }
+
+.add-section {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.add-section h2 { margin: 0 0 12px; font-size: 17px; }
+
+.add-section .btn { margin-top: 12px; }
+
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  z-index: 25;
+}
+
+@media (max-width: 640px) {
+  .item-grid,
+  .add-grid { grid-template-columns: 1fr; }
+}
