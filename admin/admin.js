@@ -37,7 +37,7 @@ function base64ToUtf8(b64) {
   return new TextDecoder().decode(bytes);
 }
 
-/* ---------- درخواست به GitHub API (هدر احراز هویت همیشه حاضر) ---------- */
+/* ---------- درخواست به GitHub API ---------- */
 async function api(path, opts = {}) {
   const headers = Object.assign(
     {
@@ -112,7 +112,10 @@ function renderEditor() {
     const catItems = menuData.items.filter((i) => i.category === cat.id);
     return `
       <section class="cat-block">
-        <h2>${cat.emoji} ${escapeHtml(cat.labelFa)} <span>${escapeHtml(cat.labelEn)}</span></h2>
+        <h2>
+          ${cat.emoji} ${escapeHtml(cat.labelFa)} <span>${escapeHtml(cat.labelEn)}</span>
+          <button class="btn btn-danger btn-small cat-del" type="button" data-delcat="${cat.id}">🗑 حذف دسته</button>
+        </h2>
         <div class="items">
           ${catItems.map(itemCard).join("") || '<p class="muted">محصولی ندارد.</p>'}
         </div>
@@ -126,6 +129,10 @@ function renderEditor() {
 
 function itemCard(item) {
   const checked = item.available === false ? "" : "checked";
+  const preview = item.image
+    ? `<img class="img-preview" src="../${escapeHtml(item.image)}" onerror="this.style.display='none'" />`
+    : `<img class="img-preview" style="display:none" />`;
+
   return `
     <div class="item-card" data-id="${item.id}">
       <div class="item-head">
@@ -136,13 +143,22 @@ function itemCard(item) {
         </label>
         <button class="btn btn-danger btn-small" type="button" data-del="${item.id}">حذف</button>
       </div>
+
+      <div class="img-row">
+        ${preview}
+        <label class="btn btn-outline btn-small">
+          🖼️ تغییر عکس
+          <input type="file" accept="image/*" data-img="${item.id}" hidden />
+        </label>
+        <span class="muted small img-path">${escapeHtml(item.image || "بدون عکس")}</span>
+      </div>
+
       <div class="item-grid">
         <label>نام فارسی<input type="text" data-field="titleFa" value="${escapeHtml(item.titleFa)}" /></label>
         <label>نام انگلیسی<input type="text" data-field="titleEn" value="${escapeHtml(item.titleEn)}" /></label>
         <label>قیمت (تومان)<input type="number" min="0" step="1000" data-field="price" value="${item.price}" /></label>
         <label>ایموجی<input type="text" data-field="emoji" value="${escapeHtml(item.emoji)}" /></label>
         <label class="full">توضیح<input type="text" data-field="description" value="${escapeHtml(item.description)}" /></label>
-        <label class="full muted small">مسیر عکس: ${escapeHtml(item.image || "-")} (آپلود عکس: قدم بعد)</label>
       </div>
     </div>`;
 }
@@ -162,7 +178,7 @@ function collectData() {
   });
 }
 
-/* ---------- افزودن / حذف ---------- */
+/* ---------- افزودن / حذف محصول ---------- */
 function nextId() {
   return menuData.items.reduce((m, i) => Math.max(m, i.id), 0) + 1;
 }
@@ -209,6 +225,121 @@ function deleteItem(id) {
   setStatus("محصول حذف شد. برای اعمال، دکمه ذخیره را بزنید.", "ok");
 }
 
+/* ---------- مدیریت دسته‌بندی‌ها ---------- */
+function addCategory() {
+  const fa = $("#catLabelFa").value.trim();
+  const en = $("#catLabelEn").value.trim();
+  const emoji = $("#catEmoji").value.trim() || "🍽️";
+
+  if (!fa) { setStatus("نام فارسی دسته را بنویسید.", "err"); return; }
+
+  const id = slugify(en || fa);
+  if (menuData.categories.some((c) => c.id === id)) {
+    setStatus("دسته‌ای با همین شناسه وجود دارد.", "err");
+    return;
+  }
+
+  menuData.categories.push({
+    id: id,
+    labelFa: fa,
+    labelEn: en || fa,
+    emoji: emoji,
+    icon: `images/icons/${id}.png`
+  });
+
+  renderEditor();
+  setStatus("دسته اضافه شد. برای اعمال، دکمه ذخیره را بزنید.", "ok");
+}
+
+function deleteCategory(id) {
+  const cat = menuData.categories.find((c) => c.id === id);
+  if (!cat) return;
+
+  const count = menuData.items.filter((i) => i.category === id).length;
+  if (count > 0) {
+    alert(`این دسته ${count} محصول دارد. اول محصولات آن را حذف یا به دسته دیگر منتقل کنید.`);
+    return;
+  }
+  if (!confirm(`دسته «${cat.labelFa}» حذف شود؟`)) return;
+
+  menuData.categories = menuData.categories.filter((c) => c.id !== id);
+  renderEditor();
+  setStatus("دسته حذف شد. برای اعمال، دکمه ذخیره را بزنید.", "ok");
+}
+
+/* ---------- آپلود عکس ---------- */
+function fileToResizedBase64(file, maxW, quality) {
+  maxW = maxW || 900;
+  quality = quality || 0.82;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl.split(",")[1]);
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function getShaOrNull(path) {
+  try {
+    const f = await api(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`);
+    return f.sha;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function uploadImage(id, file) {
+  const item = menuData.items.find((i) => i.id === id);
+  if (!item) return;
+
+  setStatus("در حال آماده‌سازی عکس...", "");
+  try {
+    const b64 = await fileToResizedBase64(file);
+
+    let path = item.image;
+    if (!path) {
+      path = `images/${item.category}/${slugify(item.titleEn || item.titleFa)}.jpg`;
+      item.image = path;
+    }
+
+    const sha = await getShaOrNull(path);
+    setStatus("در حال آپلود عکس روی GitHub...", "");
+
+    const body = { message: `Upload image: ${item.titleFa}`, content: b64 };
+    if (sha) body.sha = sha;
+
+    await api(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    setStatus("✅ عکس آپلود شد! طی ۱ تا ۲ دقیقه روی سایت می‌نشیند.", "ok");
+
+    const prev = document.querySelector(`.item-card[data-id="${id}"] .img-preview`);
+    if (prev) {
+      prev.style.display = "";
+      prev.src = "../" + path + "?t=" + Date.now();
+    }
+  } catch (e) {
+    setStatus("خطا در آپلود عکس: " + e.message, "err");
+  }
+}
+
 /* ---------- ساخت متن فایل menu-data.js ---------- */
 function serialize() {
   const head =
@@ -242,7 +373,7 @@ async function save() {
       })
     });
     fileSha = res.content.sha;
-    setStatus("✅ ذخیره شد! تغییرات طی ۱ تا  دقیقه روی سایت می‌نشیند.", "ok");
+    setStatus("✅ ذخیره شد! تغییرات طی ۱ تا ۲ دقیقه روی سایت می‌نشیند.", "ok");
   } catch (e) {
     setStatus("خطا در ذخیره: " + e.message, "err");
   } finally {
@@ -263,10 +394,21 @@ $("#tokenInput").addEventListener("keydown", (e) => { if (e.key === "Enter") log
 $("#logoutBtn").addEventListener("click", logout);
 $("#saveBtn").addEventListener("click", save);
 $("#addBtn").addEventListener("click", addItem);
+$("#addCatBtn").addEventListener("click", addCategory);
 
 $("#categoriesWrap").addEventListener("click", (e) => {
   const del = e.target.closest("[data-del]");
-  if (del) deleteItem(Number(del.dataset.del));
+  if (del) { deleteItem(Number(del.dataset.del)); return; }
+
+  const delcat = e.target.closest("[data-delcat]");
+  if (delcat) deleteCategory(delcat.dataset.delcat);
+});
+
+$("#categoriesWrap").addEventListener("change", (e) => {
+  const inp = e.target.closest("[data-img]");
+  if (inp && inp.files && inp.files[0]) {
+    uploadImage(Number(inp.dataset.img), inp.files[0]);
+  }
 });
 
 /* ---------- شروع ---------- */

@@ -58,6 +58,28 @@ body {
 
 .btn-big { padding: 14px 30px; font-size: 16px; }
 
+/* ---------- پیام وضعیت شناور (همیشه بالای صفحه) ---------- */
+.status {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  width: min(560px, calc(100% - 32px));
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  background: var(--surface-2);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+}
+
+.status.ok { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+.status.err { background: var(--danger); color: #fff; border-color: var(--danger); }
+
 /* ---------- صفحه ورود ---------- */
 .login-screen {
   min-height: 100vh;
@@ -149,32 +171,23 @@ body {
 
 .admin-actions { display: flex; gap: 8px; }
 
-.status {
-  margin: 14px auto 0;
-  width: min(900px, calc(100% - 32px));
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  background: var(--surface-2);
-}
-
-.status.ok { background: var(--accent); color: var(--on-accent); }
-
-.status.err { background: var(--danger); color: #fff; }
-
 .admin-main {
-  width: min(900px, calc(100% - 32px));
-  margin: 20px auto 100px;
+  width: min(1100px, calc(100% - 32px));
+  margin: 20px auto 110px;
 }
 
-.cat-block { margin-bottom: 26px; }
+/* ---------- دسته‌ها ---------- */
+.cat-block { margin-bottom: 30px; }
 
 .cat-block h2 {
   font-size: 18px;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   border-right: 4px solid var(--accent);
   padding-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .cat-block h2 span {
@@ -183,12 +196,20 @@ body {
   font-weight: 400;
 }
 
+.cat-block h2 .cat-del { margin-right: auto; }
+
+/* ---------- چیدمان دوستونی محصولات ---------- */
+.items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .item-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px;
-  margin-bottom: 12px;
 }
 
 .item-head {
@@ -212,6 +233,30 @@ body {
 
 .switch input { width: 18px; height: 18px; accent-color: var(--accent); }
 
+/* ---------- ردیف عکس ---------- */
+.img-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.img-preview {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.img-path {
+  direction: ltr;
+  font-size: 10px;
+}
+
+/* ---------- فرم‌ها ---------- */
 .item-grid,
 .add-grid {
   display: grid;
@@ -245,17 +290,23 @@ select {
 
 .small { font-size: 11px; }
 
+/* ---------- بخش‌ها ---------- */
+.cat-manage,
 .add-section {
   background: var(--surface);
   border: 1px dashed var(--border);
   border-radius: var(--radius);
   padding: 18px;
+  margin-top: 20px;
 }
 
+.cat-manage h2,
 .add-section h2 { margin: 0 0 12px; font-size: 17px; }
 
+.cat-manage .btn,
 .add-section .btn { margin-top: 12px; }
 
+/* ---------- نوار ذخیره ---------- */
 .save-bar {
   position: fixed;
   bottom: 0;
@@ -267,6 +318,11 @@ select {
   display: flex;
   justify-content: center;
   z-index: 25;
+}
+
+/* ---------- ریسپانسیو ---------- */
+@media (max-width: 900px) {
+  .items { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {

@@ -59,6 +59,25 @@
     <main class="admin-main">
       <div id="categoriesWrap"></div>
 
+      <!-- مدیریت دسته‌بندی‌ها -->
+      <section class="cat-manage">
+        <h2>🗂️ مدیریت دسته‌بندی‌ها</h2>
+        <div class="add-grid">
+          <label>نام فارسی دسته
+            <input id="catLabelFa" type="text" placeholder="مثلاً پیتزا" />
+          </label>
+          <label>نام انگلیسی دسته
+            <input id="catLabelEn" type="text" placeholder="Pizza" />
+          </label>
+          <label>ایموجی دسته
+            <input id="catEmoji" type="text" value="🍕" />
+          </label>
+        </div>
+        <button id="addCatBtn" class="btn btn-primary" type="button">افزودن دسته</button>
+        <p class="muted small">برای حذف یک دسته، دکمه 🗑 کنار عنوان همان دسته را بزنید (فقط اگر دسته خالی باشد).</p>
+      </section>
+
+      <!-- افزودن محصول -->
       <section class="add-section">
         <h2>➕ افزودن محصول جدید</h2>
         <div class="add-grid">
