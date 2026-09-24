@@ -88,6 +88,10 @@ function findItem(id) {
   return items.find((item) => item.id === Number(id));
 }
 
+function isAvailable(item) {
+  return !item || item.available !== false;
+}
+
 function cartCount() {
   return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 }
@@ -100,6 +104,9 @@ function cartTotal() {
 }
 
 function addToCart(id) {
+  const item = findItem(id);
+  if (!item || !isAvailable(item)) return;
+
   cart[id] = (cart[id] || 0) + 1;
   saveCart();
   updateBadge();
@@ -164,7 +171,7 @@ function renderCart() {
         <p>سبد شما خالی است.</p>
       </div>
     `;
-    $("#cartTotal").textContent = formatPrice(0) === "رایگان" ? "۰ " + config.currency : formatPrice(0);
+    $("#cartTotal").textContent = "۰ " + config.currency;
     return;
   }
 
@@ -174,15 +181,16 @@ function renderCart() {
       if (!item) return "";
 
       const lineTotal = item.price * qty;
+      const soldOut = !isAvailable(item);
 
       return `
-        <div class="cart-line">
+        <div class="cart-line${soldOut ? " cart-line-soldout" : ""}">
           <div class="cart-thumb">${item.emoji}</div>
 
           <div>
             <div class="cart-name-fa">${escapeHtml(item.titleFa)}</div>
             <div class="cart-name-en">${escapeHtml(item.titleEn)}</div>
-            <div class="cart-unit">${formatPrice(item.price)}</div>
+            <div class="cart-unit">${soldOut ? "ناموجود" : formatPrice(item.price)}</div>
           </div>
 
           <div class="cart-line-side">
@@ -333,6 +341,8 @@ function renderMenu() {
 
   grid.innerHTML = filtered
     .map((item) => {
+      const soldOut = !isAvailable(item);
+
       const itemBadges = (item.badges || [])
         .map((badgeKey) => {
           const meta = badgeMeta[badgeKey];
@@ -344,6 +354,8 @@ function renderMenu() {
       const badgesHtml = itemBadges
         ? `<div class="card-badges">${itemBadges}</div>`
         : "";
+
+      const soldOutTag = soldOut ? `<div class="soldout-tag">ناموجود</div>` : "";
 
       const imageHtml = item.image
         ? `
@@ -357,14 +369,26 @@ function renderMenu() {
         `
         : "";
 
+      const addBtn = soldOut
+        ? `<button type="button" class="add-btn" disabled aria-label="ناموجود">+</button>`
+        : `
+          <button
+            type="button"
+            class="add-btn"
+            data-add="${item.id}"
+            aria-label="افزودن ${escapeHtml(item.titleFa)} به سبد"
+          >+</button>
+        `;
+
       return `
-        <article class="card">
+        <article class="card${soldOut ? " sold-out" : ""}">
           <div
             class="photo"
             style="--emoji:'${item.emoji}'; --c1:${item.color1}; --c2:${item.color2};"
           >
             ${imageHtml}
             ${badgesHtml}
+            ${soldOutTag}
           </div>
 
           <div class="card-body">
@@ -374,12 +398,7 @@ function renderMenu() {
 
             <div class="card-footer">
               <div class="price">${formatPrice(item.price)}</div>
-              <button
-                type="button"
-                class="add-btn"
-                data-add="${item.id}"
-                aria-label="افزودن ${escapeHtml(item.titleFa)} به سبد"
-              >+</button>
+              ${addBtn}
             </div>
           </div>
         </article>
@@ -417,7 +436,7 @@ $("#categoryChips").addEventListener("click", (event) => {
 
 $("#menuGrid").addEventListener("click", (event) => {
   const button = event.target.closest("[data-add]");
-  if (!button) return;
+  if (!button || button.disabled) return;
   addToCart(button.dataset.add);
 });
 
