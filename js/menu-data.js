@@ -54,6 +54,13 @@ const categories = [
     "labelEn": "Drinks",
     "emoji": "🥤",
     "icon": "images/icons/drink.png"
+  },
+  {
+    "id": "pizza",
+    "labelFa": "پیتزا قیفی",
+    "labelEn": "Pizza",
+    "emoji": "🍕",
+    "icon": "images/icons/pizza.png"
   }
 ];
 
@@ -367,6 +374,20 @@ const items = [
     "emoji": "🫧",
     "color1": "#203040",
     "color2": "#406080",
+    "badges": [],
+    "available": true
+  },
+  {
+    "id": 23,
+    "category": "pizza",
+    "titleFa": "پیتزا قیفی",
+    "titleEn": "PIzza",
+    "description": "پیتزا قیفی",
+    "price": 300000,
+    "image": "images/pizza/pizza.jpg",
+    "emoji": "🍕",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
     "badges": [],
     "available": true
   }
