@@ -37,7 +37,7 @@ function base64ToUtf8(b64) {
   return new TextDecoder().decode(bytes);
 }
 
-/* ---------- درخواست به GitHub API (با هدر احراز هویت همیشه حاضر) ---------- */
+/* ---------- درخواست به GitHub API (هدر احراز هویت همیشه حاضر) ---------- */
 async function api(path, opts = {}) {
   const headers = Object.assign(
     {
@@ -242,7 +242,7 @@ async function save() {
       })
     });
     fileSha = res.content.sha;
-    setStatus("✅ ذخیره شد! تغییرات طی ۱ تا ۲ دقیقه روی سایت می‌نشیند.", "ok");
+    setStatus("✅ ذخیره شد! تغییرات طی ۱ تا  دقیقه روی سایت می‌نشیند.", "ok");
   } catch (e) {
     setStatus("خطا در ذخیره: " + e.message, "err");
   } finally {
