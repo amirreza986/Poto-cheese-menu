@@ -70,7 +70,7 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": false
+    "available": true
   },
   {
     "id": 2,
@@ -284,7 +284,7 @@ const items = [
     "color1": "#102030",
     "color2": "#204060",
     "badges": [],
-    "available": false
+    "available": true
   },
   {
     "id": 17,
