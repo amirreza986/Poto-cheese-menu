@@ -37,13 +37,19 @@ function base64ToUtf8(b64) {
   return new TextDecoder().decode(bytes);
 }
 
+/* ---------- درخواست به GitHub API (با هدر احراز هویت همیشه حاضر) ---------- */
 async function api(path, opts = {}) {
-  const res = await fetch(API + path, Object.assign({
-    headers: Object.assign({
+  const headers = Object.assign(
+    {
       "Authorization": "Bearer " + token,
       "Accept": "application/vnd.github+json"
-    }, opts.headers || {})
-  }, opts));
+    },
+    opts.headers || {}
+  );
+
+  const options = Object.assign({}, opts, { headers: headers });
+
+  const res = await fetch(API + path, options);
 
   if (!res.ok) {
     let msg = res.status + " " + res.statusText;
