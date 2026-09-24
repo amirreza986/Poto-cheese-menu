@@ -284,7 +284,7 @@ const items = [
     "color1": "#102030",
     "color2": "#204060",
     "badges": [],
-    "available": true
+    "available": false
   },
   {
     "id": 17,
