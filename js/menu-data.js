@@ -369,6 +369,48 @@ const items = [
     "color2": "#406080",
     "badges": [],
     "available": true
+  },
+  {
+    "id": 23,
+    "category": "snacks",
+    "titleFa": "اسنک مثلثی",
+    "titleEn": "Snack",
+    "description": "اسنک مثلثی",
+    "price": 250000,
+    "image": "images/snacks/snack.jpg",
+    "emoji": "🥩",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true
+  },
+  {
+    "id": 24,
+    "category": "snacks",
+    "titleFa": "اسنک مثلثی",
+    "titleEn": "Snack",
+    "description": "اسنک مثلثی",
+    "price": 250000,
+    "image": "images/snacks/snack.jpg",
+    "emoji": "🥩",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true
+  },
+  {
+    "id": 25,
+    "category": "special-sauces",
+    "titleFa": "اسنک مثلثی",
+    "titleEn": "Snack",
+    "description": "اسنک مثلثی",
+    "price": 250000,
+    "image": "images/special-sauces/snack.jpg",
+    "emoji": "🥩",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true
   }
 ];
 
