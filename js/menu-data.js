@@ -374,6 +374,20 @@ const items = [
     "color2": "#406080",
     "badges": [],
     "available": true
+  },
+  {
+    "id": 23,
+    "category": "special-sauces",
+    "titleFa": "سس مخصوص",
+    "titleEn": "Especial Sauce",
+    "description": "سس مخصوص",
+    "price": 120000,
+    "image": "images/special-sauces/especial-sauce.jpg",
+    "emoji": "🍯",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true
   }
 ];
 
