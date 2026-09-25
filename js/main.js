@@ -68,6 +68,12 @@ function setStored(key, value) {
   }
 }
 
+/* ---------- ترتیب دسته‌ها ---------- */
+function categoryOrderOf(categoryId) {
+  const cat = categories.find((c) => c.id === categoryId);
+  return cat && typeof cat.order === "number" ? cat.order : 100;
+}
+
 /* ---------- سبد خرید ---------- */
 function loadCart() {
   const raw = getStored(CART_KEY);
@@ -277,14 +283,14 @@ if (config.phoneTel) {
   callButton.style.display = "none";
 }
 
-/* ---------- رندر دسته‌بندی‌ها (مرتب‌سازی بر اساس order) ---------- */
+/* ---------- رندر دسته‌بندی‌ها (مرتب بر اساس order) ---------- */
 function renderChips() {
   const wrap = $("#categoryChips");
-  
+
   const sortedCategories = [...categories].sort((a, b) => {
     return (a.order || 100) - (b.order || 100);
   });
-  
+
   const allCategories = [
     { id: "all", labelFa: "همه", labelEn: "All", emoji: "🍽️", icon: config.allIcon },
     ...sortedCategories
@@ -312,11 +318,11 @@ function renderChips() {
     .join("");
 }
 
-/* ---------- فیلتر آیتم‌ها ---------- */
+/* ---------- فیلتر + مرتب‌سازی آیتم‌ها ---------- */
 function getFilteredItems() {
   const query = normalize(state.query);
 
-  return items.filter((item) => {
+  const filtered = items.filter((item) => {
     const matchesCategory = state.category === "all" || item.category === state.category;
 
     const categoryLabel = categories.find((c) => c.id === item.category)?.labelFa || "";
@@ -328,6 +334,16 @@ function getFilteredItems() {
 
     return matchesCategory && matchesQuery;
   });
+
+  /* مرتب‌سازی: اول بر اساس ترتیب دسته، بعد بر اساس id */
+  filtered.sort((a, b) => {
+    const orderA = categoryOrderOf(a.category);
+    const orderB = categoryOrderOf(b.category);
+    if (orderA !== orderB) return orderA - orderB;
+    return a.id - b.id;
+  });
+
+  return filtered;
 }
 
 /* ---------- رندر کارت‌ها ---------- */
