@@ -277,12 +277,17 @@ if (config.phoneTel) {
   callButton.style.display = "none";
 }
 
-/* ---------- رندر دسته‌بندی‌ها ---------- */
+/* ---------- رندر دسته‌بندی‌ها (مرتب‌سازی بر اساس order) ---------- */
 function renderChips() {
   const wrap = $("#categoryChips");
+  
+  const sortedCategories = [...categories].sort((a, b) => {
+    return (a.order || 100) - (b.order || 100);
+  });
+  
   const allCategories = [
     { id: "all", labelFa: "همه", labelEn: "All", emoji: "🍽️", icon: config.allIcon },
-    ...categories
+    ...sortedCategories
   ];
 
   wrap.innerHTML = allCategories

@@ -25,35 +25,40 @@ const categories = [
     "labelFa": "پوتو",
     "labelEn": "Poto",
     "emoji": "🥔",
-    "icon": "images/icons/poto.png"
+    "icon": "images/icons/poto.png",
+    "order": 100
   },
   {
     "id": "snacks",
     "labelFa": "اسنک",
     "labelEn": "Snacks",
     "emoji": "🍟",
-    "icon": "images/icons/snack.png"
+    "icon": "images/icons/snack.png",
+    "order": 200
   },
   {
     "id": "special-sauces",
     "labelFa": "سس اسپشیال",
     "labelEn": "Special Sauces",
     "emoji": "🍯",
-    "icon": "images/icons/sauce.png"
+    "icon": "images/icons/sauce.png",
+    "order": 999
   },
   {
     "id": "hot-dips",
     "labelFa": "دیپ هات",
     "labelEn": "Hot Dips",
     "emoji": "🫕",
-    "icon": "images/icons/dip.png"
+    "icon": "images/icons/dip.png",
+    "order": 999
   },
   {
     "id": "drinks",
     "labelFa": "نوشیدنی",
     "labelEn": "Drinks",
     "emoji": "🥤",
-    "icon": "images/icons/drink.png"
+    "icon": "images/icons/drink.png",
+    "order": 999
   }
 ];
 

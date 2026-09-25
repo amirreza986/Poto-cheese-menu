@@ -244,7 +244,8 @@ function addCategory() {
     labelFa: fa,
     labelEn: en || fa,
     emoji: emoji,
-    icon: `images/icons/${id}.png`
+    icon: `images/icons/${id}.png`,
+    order: 100
   });
 
   renderEditor();
