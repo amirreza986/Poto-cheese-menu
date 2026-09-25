@@ -74,6 +74,11 @@ function categoryOrderOf(categoryId) {
   return cat && typeof cat.order === "number" ? cat.order : 100;
 }
 
+function categoryIndexOf(categoryId) {
+  const idx = categories.findIndex((c) => c.id === categoryId);
+  return idx === -1 ? 9999 : idx;
+}
+
 /* ---------- سبد خرید ---------- */
 function loadCart() {
   const raw = getStored(CART_KEY);
@@ -288,7 +293,9 @@ function renderChips() {
   const wrap = $("#categoryChips");
 
   const sortedCategories = [...categories].sort((a, b) => {
-    return (a.order || 100) - (b.order || 100);
+    const diff = (a.order || 100) - (b.order || 100);
+    if (diff !== 0) return diff;
+    return categoryIndexOf(a.id) - categoryIndexOf(b.id);
   });
 
   const allCategories = [
@@ -335,11 +342,20 @@ function getFilteredItems() {
     return matchesCategory && matchesQuery;
   });
 
-  /* مرتب‌سازی: اول بر اساس ترتیب دسته، بعد بر اساس id */
+  /* مرتب‌سازی:
+     1) عدد ترتیب دسته (order)
+     2) جای دسته در لیست دسته‌ها
+     3) شماره id داخل همان دسته
+  */
   filtered.sort((a, b) => {
     const orderA = categoryOrderOf(a.category);
     const orderB = categoryOrderOf(b.category);
     if (orderA !== orderB) return orderA - orderB;
+
+    const indexA = categoryIndexOf(a.category);
+    const indexB = categoryIndexOf(b.category);
+    if (indexA !== indexB) return indexA - indexB;
+
     return a.id - b.id;
   });
 
