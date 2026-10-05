@@ -388,6 +388,20 @@ const items = [
     "color2": "#2a7a54",
     "badges": [],
     "available": true
+  },
+  {
+    "id": 24,
+    "category": "special-sauces",
+    "titleFa": "سس چیلی تایی",
+    "titleEn": "Thai Chili Sauce",
+    "description": "سس تند و شیرین تایلندی",
+    "price": 60000,
+    "image": "images/special-sauces/thai-chili-sauce.jpg",
+    "emoji": "🍯",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true
   }
 ];
 
