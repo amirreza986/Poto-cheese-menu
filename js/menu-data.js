@@ -75,7 +75,8 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 2,
@@ -89,7 +90,8 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 3,
@@ -103,7 +105,8 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 4,
@@ -117,7 +120,8 @@ const items = [
     "color1": "#3a2a10",
     "color2": "#7a5a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 5,
@@ -131,7 +135,8 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 6,
@@ -145,7 +150,8 @@ const items = [
     "color1": "#3a1a10",
     "color2": "#7a3a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 7,
@@ -159,7 +165,8 @@ const items = [
     "color1": "#3a2a10",
     "color2": "#7a5a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 8,
@@ -175,7 +182,8 @@ const items = [
     "badges": [
       "spicy"
     ],
-    "available": false
+    "available": false,
+    "soon": true
   },
   {
     "id": 9,
@@ -189,7 +197,8 @@ const items = [
     "color1": "#2a3010",
     "color2": "#5a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 10,
@@ -205,7 +214,8 @@ const items = [
     "badges": [
       "spicy"
     ],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 11,
@@ -219,7 +229,8 @@ const items = [
     "color1": "#2a3020",
     "color2": "#5a6a40",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 12,
@@ -233,7 +244,8 @@ const items = [
     "color1": "#3a2a20",
     "color2": "#7a5a40",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 13,
@@ -247,7 +259,8 @@ const items = [
     "color1": "#3a1010",
     "color2": "#7a2020",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 14,
@@ -261,7 +274,8 @@ const items = [
     "color1": "#3a3010",
     "color2": "#7a6a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 15,
@@ -275,7 +289,8 @@ const items = [
     "color1": "#2a2a20",
     "color2": "#5a5a40",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 16,
@@ -289,7 +304,8 @@ const items = [
     "color1": "#102030",
     "color2": "#204060",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 17,
@@ -303,7 +319,8 @@ const items = [
     "color1": "#3a1010",
     "color2": "#7a2020",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 18,
@@ -317,7 +334,8 @@ const items = [
     "color1": "#3a2a10",
     "color2": "#7a5a20",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 19,
@@ -331,7 +349,8 @@ const items = [
     "color1": "#1a3020",
     "color2": "#3a6a40",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 20,
@@ -345,7 +364,8 @@ const items = [
     "color1": "#f0f9ff",
     "color2": "#bae6fd",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 21,
@@ -359,7 +379,8 @@ const items = [
     "color1": "#1a3030",
     "color2": "#3a6a6a",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 22,
@@ -373,7 +394,8 @@ const items = [
     "color1": "#203040",
     "color2": "#406080",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 23,
@@ -387,7 +409,8 @@ const items = [
     "color1": "#1a4433",
     "color2": "#2a7a54",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   },
   {
     "id": 24,
@@ -401,7 +424,8 @@ const items = [
     "color1": "#1a4433",
     "color2": "#2a7a54",
     "badges": [],
-    "available": true
+    "available": true,
+    "soon": false
   }
 ];
 
