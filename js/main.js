@@ -79,6 +79,19 @@ function categoryIndexOf(categoryId) {
   return idx === -1 ? 9999 : idx;
 }
 
+/* ---------- وضعیت محصول ---------- */
+function isAvailable(item) {
+  return !item || item.available !== false;
+}
+
+function isSoon(item) {
+  return !!item && item.soon === true;
+}
+
+function canOrder(item) {
+  return isAvailable(item) && !isSoon(item);
+}
+
 /* ---------- سبد خرید ---------- */
 function loadCart() {
   const raw = getStored(CART_KEY);
@@ -99,10 +112,6 @@ function findItem(id) {
   return items.find((item) => item.id === Number(id));
 }
 
-function isAvailable(item) {
-  return !item || item.available !== false;
-}
-
 function cartCount() {
   return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 }
@@ -116,7 +125,7 @@ function cartTotal() {
 
 function addToCart(id) {
   const item = findItem(id);
-  if (!item || !isAvailable(item)) return;
+  if (!item || !canOrder(item)) return;
 
   cart[id] = (cart[id] || 0) + 1;
   saveCart();
@@ -193,15 +202,19 @@ function renderCart() {
 
       const lineTotal = item.price * qty;
       const soldOut = !isAvailable(item);
+      const soon = isSoon(item);
+
+      const unitText = soon ? "به زودی" : (soldOut ? "ناموجود" : formatPrice(item.price));
+      const lineClass = soon ? " cart-line-soon" : (soldOut ? " cart-line-soldout" : "");
 
       return `
-        <div class="cart-line${soldOut ? " cart-line-soldout" : ""}">
+        <div class="cart-line${lineClass}">
           <div class="cart-thumb">${item.emoji}</div>
 
           <div>
             <div class="cart-name-fa">${escapeHtml(item.titleFa)}</div>
             <div class="cart-name-en">${escapeHtml(item.titleEn)}</div>
-            <div class="cart-unit">${soldOut ? "ناموجود" : formatPrice(item.price)}</div>
+            <div class="cart-unit">${unitText}</div>
           </div>
 
           <div class="cart-line-side">
@@ -342,11 +355,6 @@ function getFilteredItems() {
     return matchesCategory && matchesQuery;
   });
 
-  /* مرتب‌سازی:
-     1) عدد ترتیب دسته (order)
-     2) جای دسته در لیست دسته‌ها
-     3) شماره id داخل همان دسته
-  */
   filtered.sort((a, b) => {
     const orderA = categoryOrderOf(a.category);
     const orderB = categoryOrderOf(b.category);
@@ -379,6 +387,8 @@ function renderMenu() {
   grid.innerHTML = filtered
     .map((item) => {
       const soldOut = !isAvailable(item);
+      const soon = isSoon(item);
+      const blocked = soldOut || soon;
 
       const itemBadges = (item.badges || [])
         .map((badgeKey) => {
@@ -392,7 +402,11 @@ function renderMenu() {
         ? `<div class="card-badges">${itemBadges}</div>`
         : "";
 
-      const soldOutTag = soldOut ? `<div class="soldout-tag">ناموجود</div>` : "";
+      const statusTag = soon
+        ? `<div class="soon-tag">به زودی</div>`
+        : (soldOut ? `<div class="soldout-tag">ناموجود</div>` : "");
+
+      const cardClass = soon ? " coming-soon" : (soldOut ? " sold-out" : "");
 
       const imageHtml = item.image
         ? `
@@ -406,8 +420,8 @@ function renderMenu() {
         `
         : "";
 
-      const addBtn = soldOut
-        ? `<button type="button" class="add-btn" disabled aria-label="ناموجود">+</button>`
+      const addBtn = blocked
+        ? `<button type="button" class="add-btn" disabled aria-label="غیرقابل سفارش">+</button>`
         : `
           <button
             type="button"
@@ -418,14 +432,14 @@ function renderMenu() {
         `;
 
       return `
-        <article class="card${soldOut ? " sold-out" : ""}">
+        <article class="card${cardClass}">
           <div
             class="photo"
             style="--emoji:'${item.emoji}'; --c1:${item.color1}; --c2:${item.color2};"
           >
             ${imageHtml}
             ${badgesHtml}
-            ${soldOutTag}
+            ${statusTag}
           </div>
 
           <div class="card-body">

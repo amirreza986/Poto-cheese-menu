@@ -128,7 +128,8 @@ function renderEditor() {
 }
 
 function itemCard(item) {
-  const checked = item.available === false ? "" : "checked";
+  const checkedAvailable = item.available === false ? "" : "checked";
+  const checkedSoon = item.soon === true ? "checked" : "";
   const preview = item.image
     ? `<img class="img-preview" src="../${escapeHtml(item.image)}" onerror="this.style.display='none'" />`
     : `<img class="img-preview" style="display:none" />`;
@@ -138,8 +139,12 @@ function itemCard(item) {
       <div class="item-head">
         <span class="item-emoji">${escapeHtml(item.emoji)}</span>
         <label class="switch">
-          <input type="checkbox" data-field="available" ${checked} />
+          <input type="checkbox" data-field="available" ${checkedAvailable} />
           <span>موجود</span>
+        </label>
+        <label class="switch">
+          <input type="checkbox" data-field="soon" ${checkedSoon} />
+          <span>به زودی</span>
         </label>
         <button class="btn btn-danger btn-small" type="button" data-del="${item.id}">حذف</button>
       </div>
@@ -172,6 +177,7 @@ function collectData() {
     cardEl.querySelectorAll("[data-field]").forEach((inp) => {
       const f = inp.dataset.field;
       if (f === "available") item.available = inp.checked;
+      else if (f === "soon") item.soon = inp.checked;
       else if (f === "price") item.price = Math.max(0, Number(inp.value) || 0);
       else item[f] = inp.value;
     });
@@ -209,7 +215,8 @@ function addItem() {
     color1: "#1a4433",
     color2: "#2a7a54",
     badges: [],
-    available: true
+    available: true,
+    soon: false
   });
 
   renderEditor();

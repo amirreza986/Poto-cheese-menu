@@ -532,8 +532,41 @@ a:focus-visible {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
+/* ---------- محصول به زودی ---------- */
+.card.coming-soon .photo {
+  filter: saturate(0.6) brightness(0.85);
+}
+
+.card.coming-soon .photo::after {
+  content: "🕐";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 64px;
+  z-index: 3;
+  opacity: 0.9;
+}
+
+.soon-tag {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-6deg);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 8px;
+  z-index: 4;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
 .card.sold-out .card-title-fa,
-.card.sold-out .price {
+.card.sold-out .price,
+.card.coming-soon .card-title-fa,
+.card.coming-soon .price {
   opacity: 0.55;
 }
 
@@ -546,6 +579,11 @@ a:focus-visible {
 .cart-line-soldout {
   opacity: 0.6;
   border-color: #c2334d;
+}
+
+.cart-line-soon {
+  opacity: 0.6;
+  border-color: var(--accent);
 }
 
 /* ---------- بدنه کارت ---------- */
@@ -908,6 +946,10 @@ footer {
 
   .card.sold-out .photo::after {
     font-size: 64px;
+  }
+
+  .card.coming-soon .photo::after {
+    font-size: 44px;
   }
 }
 
