@@ -210,7 +210,7 @@ function addItem() {
     titleEn: titleEn || titleFa,
     description: desc || titleFa,
     price: price,
-    image: `images/${cat}/${slugify(titleEn || titleFa)}.jpg`,
+    image: `images/${cat}/${slugify(titleEn || titleFa)}.webp`,
     emoji: emoji,
     color1: "#1a4433",
     color2: "#2a7a54",
@@ -251,7 +251,7 @@ function addCategory() {
     labelFa: fa,
     labelEn: en || fa,
     emoji: emoji,
-    icon: `images/icons/${id}.png`,
+    icon: `images/icons/${id}.webp`,
     order: 100
   });
 
@@ -275,8 +275,8 @@ function deleteCategory(id) {
   setStatus("دسته حذف شد. برای اعمال، دکمه ذخیره را بزنید.", "ok");
 }
 
-/* ---------- آپلود عکس ---------- */
-function fileToResizedBase64(file, maxW, quality) {
+/* ---------- تبدیل عکس به WebP در مرورگر ---------- */
+function fileToResizedData(file, maxW, quality) {
   maxW = maxW || 900;
   quality = quality || 0.82;
   return new Promise((resolve, reject) => {
@@ -286,12 +286,22 @@ function fileToResizedBase64(file, maxW, quality) {
       img.onload = () => {
         let w = img.width, h = img.height;
         if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+
         const canvas = document.createElement("canvas");
         canvas.width = w;
         canvas.height = h;
         canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(dataUrl.split(",")[1]);
+
+        let dataUrl = canvas.toDataURL("image/webp", quality);
+        let ext = "webp";
+
+        // اگر مرورگر WebP نساخت، به JPEG برگرد
+        if (dataUrl.indexOf("data:image/webp") !== 0) {
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+          ext = "jpg";
+        }
+
+        resolve({ b64: dataUrl.split(",")[1], ext: ext });
       };
       img.onerror = reject;
       img.src = reader.result;
@@ -314,20 +324,22 @@ async function uploadImage(id, file) {
   const item = menuData.items.find((i) => i.id === id);
   if (!item) return;
 
-  setStatus("در حال آماده‌سازی عکس...", "");
+  setStatus("در حال تبدیل عکس به WebP...", "");
   try {
-    const b64 = await fileToResizedBase64(file);
+    const out = await fileToResizedData(file);
 
-    let path = item.image;
-    if (!path) {
-      path = `images/${item.category}/${slugify(item.titleEn || item.titleFa)}.jpg`;
-      item.image = path;
-    }
+    // مسیر پایه بدون پسوند
+    let base = item.image
+      ? item.image.replace(/\.(png|jpe?g|webp)$/i, "")
+      : `images/${item.category}/${slugify(item.titleEn || item.titleFa)}`;
+
+    const path = base + "." + out.ext;
+    item.image = path;
 
     const sha = await getShaOrNull(path);
     setStatus("در حال آپلود عکس روی GitHub...", "");
 
-    const body = { message: `Upload image: ${item.titleFa}`, content: b64 };
+    const body = { message: `Upload image: ${item.titleFa}`, content: out.b64 };
     if (sha) body.sha = sha;
 
     await api(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
@@ -336,12 +348,14 @@ async function uploadImage(id, file) {
       body: JSON.stringify(body)
     });
 
-    setStatus("✅ عکس آپلود شد! طی ۱ تا ۲ دقیقه روی سایت می‌نشیند.", "ok");
+    setStatus("✅ عکس به‌صورت WebP آپلود شد! طی ۱ تا ۲ دقیقه روی سایت می‌نشیند.", "ok");
 
-    const prev = document.querySelector(`.item-card[data-id="${id}"] .img-preview`);
-    if (prev) {
-      prev.style.display = "";
-      prev.src = "../" + path + "?t=" + Date.now();
+    const card = document.querySelector(`.item-card[data-id="${id}"]`);
+    if (card) {
+      const prev = card.querySelector(".img-preview");
+      if (prev) { prev.style.display = ""; prev.src = "../" + path + "?t=" + Date.now(); }
+      const pathSpan = card.querySelector(".img-path");
+      if (pathSpan) pathSpan.textContent = path;
     }
   } catch (e) {
     setStatus("خطا در آپلود عکس: " + e.message, "err");
