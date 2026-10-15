@@ -426,6 +426,21 @@ const items = [
     "badges": [],
     "available": true,
     "soon": false
+  },
+  {
+    "id": 25,
+    "category": "special-sauces",
+    "titleFa": "سس انار",
+    "titleEn": "Pomegranate sauce",
+    "description": "سس انار - ترش و ملس",
+    "price": 70000,
+    "image": "images/special-sauces/pomegranate-sauce.webp",
+    "emoji": "🍯",
+    "color1": "#1a4433",
+    "color2": "#2a7a54",
+    "badges": [],
+    "available": true,
+    "soon": false
   }
 ];
 
