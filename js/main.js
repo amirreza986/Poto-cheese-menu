@@ -2,14 +2,19 @@
    فایل منطق اصلی سایت POTO CHEESE
    ===================================================== */
 
+/* --- آدرس API سفارش‌گیری (Google Apps Script) --- */
+const ORDER_API = "https://script.google.com/macros/s/AKfycbz3ai1vo2eLzTBKEbHWbZnFoNdEvZbojG3orvyrgcEFkW_MTjRdMok_vDbvYWNKMpDT/exec";
+
 const state = {
   category: "all",
   query: ""
 };
 
 const CART_KEY = "poto_cheese_cart";
+const CUSTOMER_KEY = "poto_cheese_customer";
 
 let cart = loadCart();
+let customer = loadCustomer();
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -63,9 +68,35 @@ function getStored(key) {
 function setStored(key, value) {
   try {
     localStorage.setItem(key, value);
-  } catch (error) {
-    // اگر localStorage غیرفعال بود، مشکلی ایجاد نمی‌شود.
+  } catch (error) {}
+}
+
+function clearStored(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {}
+}
+
+/* ---------- مشتری ---------- */
+function loadCustomer() {
+  const raw = getStored(CUSTOMER_KEY);
+  if (!raw) return null;
+  try {
+    const c = JSON.parse(raw);
+    return c && c.name && c.phone ? c : null;
+  } catch {
+    return null;
   }
+}
+
+function saveCustomer(c) {
+  setStored(CUSTOMER_KEY, JSON.stringify(c));
+  customer = c;
+}
+
+function forgetCustomer() {
+  clearStored(CUSTOMER_KEY);
+  customer = null;
 }
 
 /* ---------- ترتیب دسته‌ها ---------- */
@@ -99,7 +130,7 @@ function loadCart() {
   try {
     const parsed = JSON.parse(raw);
     return typeof parsed === "object" && parsed !== null ? parsed : {};
-  } catch (error) {
+  } catch {
     return {};
   }
 }
@@ -121,6 +152,17 @@ function cartTotal() {
     const item = findItem(id);
     return item ? sum + item.price * qty : sum;
   }, 0);
+}
+
+function cartSummaryText() {
+  return Object.entries(cart)
+    .map(([id, qty]) => {
+      const item = findItem(id);
+      if (!item) return "";
+      return qty + "x " + item.titleFa;
+    })
+    .filter(Boolean)
+    .join(" | ");
 }
 
 function addToCart(id) {
@@ -180,9 +222,40 @@ function closeCart() {
   $("#cartDrawer").setAttribute("aria-hidden", "true");
 }
 
+function renderCustomerBar() {
+  const el = $("#cartCustomer");
+  if (!customer) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = `
+    <div class="info">
+      <span class="name">👤 ${escapeHtml(customer.name)}</span>
+      <span class="phone">📱 ${escapeHtml(customer.phone)}</span>
+    </div>
+    <button class="change" type="button">تغییر</button>
+  `;
+  el.querySelector(".change").addEventListener("click", () => {
+    forgetCustomer();
+    openCustomerModal();
+  });
+}
+
 function renderCart() {
+  renderCustomerBar();
+
   const body = $("#cartBody");
+  const submitBtn = $("#submitOrderBtn");
   const entries = Object.entries(cart);
+
+  // فعال‌سازی/غیرفعال‌سازی دکمه ثبت سفارش
+  const canSubmit = entries.length > 0 && !!customer;
+  submitBtn.disabled = !canSubmit;
+  submitBtn.classList.remove("is-loading");
+  submitBtn.textContent = canSubmit ? "📤 ثبت سفارش و دریافت شماره صف" : "📤 ابتدا اطلاعات خود را وارد کنید";
+  if (entries.length > 0 && !customer) {
+    submitBtn.textContent = "📤 ابتدا اطلاعات خود را وارد کنید";
+  }
 
   if (entries.length === 0) {
     body.innerHTML = `
@@ -234,7 +307,111 @@ function renderCart() {
   $("#cartTotal").textContent = formatPrice(cartTotal());
 }
 
-/* ---------- تم: خودکار از گوشی + اولویت با انتخاب دستی ---------- */
+/* ---------- مودال‌ها ---------- */
+function openWelcome() {
+  $("#welcomeModal").hidden = false;
+}
+
+function closeWelcome() {
+  $("#welcomeModal").hidden = true;
+}
+
+function openCustomerModal() {
+  const modal = $("#customerModal");
+  modal.hidden = false;
+  if (customer) {
+    $("#custName").value = customer.name || "";
+    $("#custPhone").value = customer.phone || "";
+  }
+  setTimeout(() => $("#custName").focus(), 100);
+}
+
+function closeCustomerModal() {
+  $("#customerModal").hidden = true;
+}
+
+function openSuccessModal(data) {
+  $("#successQueue").textContent = toFa(data.queue);
+  $("#successDate").textContent = toFa(data.date);
+  $("#successTime").textContent = toFa(data.time);
+  $("#successName").textContent = customer ? customer.name : "—";
+  $("#successModal").hidden = false;
+}
+
+function closeSuccessModal() {
+  $("#successModal").hidden = true;
+}
+
+/* ---------- ارسال سفارش به API ---------- */
+async function submitOrder() {
+  if (!customer) {
+    openCustomerModal();
+    return;
+  }
+  const entries = Object.entries(cart);
+  if (entries.length === 0) return;
+
+  const submitBtn = $("#submitOrderBtn");
+  submitBtn.disabled = true;
+  submitBtn.classList.add("is-loading");
+  submitBtn.textContent = "⏳ در حال ثبت سفارش...";
+
+  try {
+    const payload = {
+      action: "submit",
+      username: customer.name,
+      phone: customer.phone,
+      items: cartSummaryText(),
+      total: cartTotal()
+    };
+
+    const res = await fetch(ORDER_API, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "text/plain;charset=utf-8" }
+    });
+
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("پاسخ نامعتبر از سرور");
+    }
+
+    if (!data.ok) {
+      throw new Error(data.error || "خطا در ثبت سفارش");
+    }
+
+    // تاریخ و ساعت فعلی برای نمایش در مودال موفقیت
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    const h = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+
+    openSuccessModal({
+      queue: data.queue,
+      date: `${y}-${m}-${d}`,
+      time: `${h}:${mm}`
+    });
+
+    // سبد را خالی کن
+    cart = {};
+    saveCart();
+    updateBadge();
+    renderCart();
+    closeCart();
+  } catch (err) {
+    alert("خطا در ثبت سفارش: " + err.message + "\n\nلطفاً دوباره تلاش کنید یا با رستوران تماس بگیرید.");
+  } finally {
+    submitBtn.classList.remove("is-loading");
+    renderCart();
+  }
+}
+
+/* ---------- تم ---------- */
 const darkQuery = window.matchMedia
   ? window.matchMedia("(prefers-color-scheme: dark)")
   : null;
@@ -265,16 +442,10 @@ applyTheme(currentTheme());
 
 if (darkQuery) {
   const onDeviceThemeChange = () => {
-    if (!hasManualTheme()) {
-      applyTheme(getDeviceTheme());
-    }
+    if (!hasManualTheme()) applyTheme(getDeviceTheme());
   };
-
-  if (darkQuery.addEventListener) {
-    darkQuery.addEventListener("change", onDeviceThemeChange);
-  } else if (darkQuery.addListener) {
-    darkQuery.addListener(onDeviceThemeChange);
-  }
+  if (darkQuery.addEventListener) darkQuery.addEventListener("change", onDeviceThemeChange);
+  else if (darkQuery.addListener) darkQuery.addListener(onDeviceThemeChange);
 }
 
 $("#themeToggle").addEventListener("click", () => {
@@ -301,7 +472,7 @@ if (config.phoneTel) {
   callButton.style.display = "none";
 }
 
-/* ---------- رندر دسته‌بندی‌ها (مرتب بر اساس order) ---------- */
+/* ---------- رندر دسته‌بندی‌ها ---------- */
 function renderChips() {
   const wrap = $("#categoryChips");
 
@@ -338,20 +509,17 @@ function renderChips() {
     .join("");
 }
 
-/* ---------- فیلتر + مرتب‌سازی آیتم‌ها ---------- */
+/* ---------- فیلتر + مرتب‌سازی ---------- */
 function getFilteredItems() {
   const query = normalize(state.query);
 
   const filtered = items.filter((item) => {
     const matchesCategory = state.category === "all" || item.category === state.category;
-
     const categoryLabel = categories.find((c) => c.id === item.category)?.labelFa || "";
     const searchText = normalize(
       [item.titleFa, item.titleEn, item.description, categoryLabel].join(" ")
     );
-
     const matchesQuery = !query || searchText.includes(query);
-
     return matchesCategory && matchesQuery;
   });
 
@@ -359,18 +527,16 @@ function getFilteredItems() {
     const orderA = categoryOrderOf(a.category);
     const orderB = categoryOrderOf(b.category);
     if (orderA !== orderB) return orderA - orderB;
-
     const indexA = categoryIndexOf(a.category);
     const indexB = categoryIndexOf(b.category);
     if (indexA !== indexB) return indexA - indexB;
-
     return a.id - b.id;
   });
 
   return filtered;
 }
 
-/* ---------- رندر کارت‌ها ---------- */
+/* ---------- رندر منو ---------- */
 function renderMenu() {
   const filtered = getFilteredItems();
   const grid = $("#menuGrid");
@@ -398,10 +564,7 @@ function renderMenu() {
         })
         .join("");
 
-      const badgesHtml = itemBadges
-        ? `<div class="card-badges">${itemBadges}</div>`
-        : "";
-
+      const badgesHtml = itemBadges ? `<div class="card-badges">${itemBadges}</div>` : "";
       const statusTag = soon
         ? `<div class="soon-tag">به زودی</div>`
         : (soldOut ? `<div class="soldout-tag">ناموجود</div>` : "");
@@ -409,44 +572,24 @@ function renderMenu() {
       const cardClass = soon ? " coming-soon" : (soldOut ? " sold-out" : "");
 
       const imageHtml = item.image
-        ? `
-          <img
-            src="${escapeHtml(item.image)}"
-            alt="${escapeHtml(item.titleFa)}"
-            loading="lazy"
-            decoding="async"
-            onerror="this.classList.add('is-missing')"
-          />
-        `
+        ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.titleFa)}" loading="lazy" decoding="async" onerror="this.classList.add('is-missing')" />`
         : "";
 
       const addBtn = blocked
         ? `<button type="button" class="add-btn" disabled aria-label="غیرقابل سفارش">+</button>`
-        : `
-          <button
-            type="button"
-            class="add-btn"
-            data-add="${item.id}"
-            aria-label="افزودن ${escapeHtml(item.titleFa)} به سبد"
-          >+</button>
-        `;
+        : `<button type="button" class="add-btn" data-add="${item.id}" aria-label="افزودن ${escapeHtml(item.titleFa)} به سبد">+</button>`;
 
       return `
         <article class="card${cardClass}">
-          <div
-            class="photo"
-            style="--emoji:'${item.emoji}'; --c1:${item.color1}; --c2:${item.color2};"
-          >
+          <div class="photo" style="--emoji:'${item.emoji}'; --c1:${item.color1}; --c2:${item.color2};">
             ${imageHtml}
             ${badgesHtml}
             ${statusTag}
           </div>
-
           <div class="card-body">
             <h3 class="card-title-fa">${escapeHtml(item.titleFa)}</h3>
             <p class="card-title-en">${escapeHtml(item.titleEn)}</p>
             <p class="desc">${escapeHtml(item.description)}</p>
-
             <div class="card-footer">
               <div class="price">${formatPrice(item.price)}</div>
               ${addBtn}
@@ -479,7 +622,6 @@ clearSearchButton.addEventListener("click", () => {
 $("#categoryChips").addEventListener("click", (event) => {
   const button = event.target.closest(".chip");
   if (!button) return;
-
   state.category = button.dataset.category;
   renderChips();
   renderMenu();
@@ -488,29 +630,77 @@ $("#categoryChips").addEventListener("click", (event) => {
 $("#menuGrid").addEventListener("click", (event) => {
   const button = event.target.closest("[data-add]");
   if (!button || button.disabled) return;
+
+  if (!customer) {
+    openCustomerModal();
+    return;
+  }
   addToCart(button.dataset.add);
 });
 
-$("#cartButton").addEventListener("click", openCart);
+$("#cartButton").addEventListener("click", () => {
+  if (!customer) {
+    openCustomerModal();
+  } else {
+    openCart();
+  }
+});
+
 $("#cartClose").addEventListener("click", closeCart);
+$("#cartClear").addEventListener("click", clearCart);
+$("#submitOrderBtn").addEventListener("click", submitOrder);
 
 $("#cartBody").addEventListener("click", (event) => {
   const inc = event.target.closest("[data-inc]");
   const dec = event.target.closest("[data-dec]");
   const remove = event.target.closest("[data-remove]");
-
   if (inc) changeQty(inc.dataset.inc, +1);
   else if (dec) changeQty(dec.dataset.dec, -1);
   else if (remove) removeFromCart(remove.dataset.remove);
 });
 
-$("#cartClear").addEventListener("click", clearCart);
+/* ---------- مودال‌ها: رویدادها ---------- */
+$("#welcomeMenuBtn").addEventListener("click", closeWelcome);
+$("#welcomeOrderBtn").addEventListener("click", () => {
+  closeWelcome();
+  openCustomerModal();
+});
+
+$("#customerCancel").addEventListener("click", closeCustomerModal);
+$("#customerForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = $("#custName").value.trim();
+  const phone = $("#custPhone").value.trim();
+
+  if (!name || !phone) return;
+  if (!/^09\d{9}$/.test(phone.replace(/\s/g, ""))) {
+    alert("شماره موبایل معتبر نیست. مثال: 09123456789");
+    return;
+  }
+
+  saveCustomer({ name, phone: phone.replace(/\s/g, "") });
+  closeCustomerModal();
+  renderCart();
+});
+
+$("#successClose").addEventListener("click", closeSuccessModal);
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeCart();
+  if (event.key === "Escape") {
+    closeCart();
+    closeWelcome();
+    closeCustomerModal();
+    closeSuccessModal();
+  }
 });
 
 /* ---------- اجرای اولیه ---------- */
 updateBadge();
 renderChips();
 renderMenu();
+
+// اگر مشتری ذخیره‌شده نداریم، مودال خوش‌آمدگویی را نشان بده
+if (!customer) {
+  // کمی صبر می‌کنیم تا صفحه کامل لود شود
+  setTimeout(openWelcome, 400);
+}
