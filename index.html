@@ -119,6 +119,7 @@
       <button id="cartClose" class="btn btn-outline icon-btn" type="button" aria-label="بستن سبد">×</button>
     </div>
 
+    <div class="cart-customer" id="cartCustomer"></div>
     <div class="cart-body" id="cartBody"></div>
 
     <div class="cart-foot">
@@ -126,10 +127,70 @@
         <div>جمع کل</div>
         <span id="cartTotal">۰ تومان</span>
       </div>
-      <p class="cart-note">این صفحه را به صندوقدار نشان دهید.</p>
+      <button id="submitOrderBtn" class="btn btn-primary btn-big" type="button" disabled>📤 ثبت سفارش و دریافت شماره صف</button>
       <button id="cartClear" class="btn btn-outline" type="button">🗑 پاک کردن سبد</button>
+      <p class="cart-note">پس از ثبت، شماره صف شما نمایش داده می‌شود. آن را به صندوقدار نشان دهید.</p>
     </div>
   </aside>
+
+  <!-- مودال خوش‌آمدگویی -->
+  <div id="welcomeModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-logo">🧀</div>
+      <h2>به پوتو چیز خوش آمدید</h2>
+      <p class="modal-sub">لطفاً یک گزینه را انتخاب کنید:</p>
+      <div class="modal-buttons">
+        <button id="welcomeMenuBtn" class="btn btn-primary btn-big" type="button">📖 نمایش منو</button>
+        <button id="welcomeOrderBtn" class="btn btn-outline btn-big" type="button">🛒 ثبت سفارش</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال اطلاعات مشتری -->
+  <div id="customerModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-logo">📝</div>
+      <h2>اطلاعات شما</h2>
+      <p class="modal-sub">برای ثبت سفارش، نام و شماره موبایل خود را وارد کنید.</p>
+
+      <form id="customerForm" class="customer-form" autocomplete="off">
+        <label>
+          <span>نام یا نام کاربری</span>
+          <input id="custName" type="text" placeholder="مثلاً علی" required />
+        </label>
+        <label>
+          <span>شماره موبایل</span>
+          <input id="custPhone" type="tel" placeholder="09xxxxxxxxx" inputmode="numeric" required />
+        </label>
+        <div class="modal-buttons">
+          <button type="submit" class="btn btn-primary btn-big">ادامه به منو</button>
+          <button type="button" id="customerCancel" class="btn btn-outline btn-big">انصراف</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- مودال موفقیت سفارش -->
+  <div id="successModal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card success-card">
+      <div class="modal-logo">✅</div>
+      <h2>سفارش شما ثبت شد!</h2>
+      <div class="queue-box">
+        <div class="queue-label">شماره صف شما</div>
+        <div class="queue-number" id="successQueue">—</div>
+      </div>
+      <div class="order-meta">
+        <div><span>📅 تاریخ:</span> <span id="successDate">—</span></div>
+        <div><span>🕐 ساعت:</span> <span id="successTime">—</span></div>
+        <div><span>👤 نام:</span> <span id="successName">—</span></div>
+      </div>
+      <p class="modal-note">این صفحه را به صندوقدار نشان دهید تا سفارش شما ثبت شود.</p>
+      <button id="successClose" class="btn btn-primary btn-big" type="button">بستن</button>
+    </div>
+  </div>
 
   <script src="js/menu-data.js"></script>
   <script src="js/main.js"></script>

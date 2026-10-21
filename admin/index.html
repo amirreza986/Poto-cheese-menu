@@ -3,196 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>POTO CHEESE | Good Food Good Mood</title>
-  <meta name="description" content="POTO CHEESE fast food menu with order basket" />
-
-  <link rel="icon" type="image/png" href="images/brand/logo-2.png" />
-
+  <meta name="robots" content="noindex" />
+  <title>پنل مدیریت | POTO CHEESE</title>
+  <link rel="icon" type="image/png" href="../images/brand/logo-2.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Vazirmatn:wght@400;500;700;800&display=swap"
-    rel="stylesheet"
-  />
-
-  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
 </head>
-
 <body>
-  <header class="top-bar">
-    <div class="container top-bar-inner">
-      <div class="brand">
-        <div class="logo-box">
-          <span class="logo-fallback">🧀</span>
-          <img class="logo-dark" src="images/brand/logo-2.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
-          <img class="logo-light" src="images/brand/logo-1.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
-        </div>
-        <div class="brand-text">
-          <h1 id="restaurantNameEn">POTO CHEESE</h1>
-          <p id="brandSub">Good Food Good Mood</p>
-        </div>
-      </div>
 
-      <div class="top-actions">
-        <button id="themeToggle" class="btn btn-outline icon-btn" type="button" aria-label="تغییر حالت روشن/تاریک">
-          ☀️
-        </button>
+  <!-- صفحه ورود -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">🧀</div>
+      <h1>پنل مدیریت پوتو چیز</h1>
+      <p class="login-sub">برای ورود، توکن دسترسی GitHub را وارد کنید</p>
+      <input id="tokenInput" type="password" placeholder="github_pat_..." autocomplete="off" />
+      <button id="loginBtn" class="btn btn-primary" type="button">ورود به پنل</button>
+      <p id="loginError" class="error" hidden></p>
 
-        <button id="cartButton" class="btn btn-outline icon-btn" type="button" aria-label="سبد سفارش">
-          🛒
-          <span id="cartBadge" class="cart-badge" hidden>۰</span>
-        </button>
+      <details class="help">
+        <summary>راهنمای ساخت توکن</summary>
+        <ol>
+          <li>برو به: github.com/settings/personal-access-tokens/new</li>
+          <li>نام: poto-admin</li>
+          <li>Repository access: Only select repositories → Poto-cheese-menu</li>
+          <li>Repository permissions: Contents = Read and write</li>
+          <li>Generate token و کپی کن</li>
+        </ol>
+      </details>
 
-        <a id="callButton" class="btn btn-primary" href="tel:09383171429">
-          📞 تماس
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="container">
-      <div class="logo-box logo-hero">
-        <span class="logo-fallback">🧀</span>
-        <img class="logo-dark" src="images/brand/logo-2.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
-        <img class="logo-light" src="images/brand/logo-1.png" alt="POTO CHEESE logo" onerror="this.style.display='none'" />
-      </div>
-
-      <span class="hero-line-1" id="heroLine1" dir="ltr">Good Food,</span>
-      <span class="hero-line-2" id="heroLine2" dir="ltr">Good Mood</span>
-      <div class="hero-rule"></div>
-      <p class="hero-sub" id="heroSub" dir="ltr">POTO CHEESE · CRISPY &amp; CHEESY</p>
-    </div>
-  </section>
-
-  <section class="search-section">
-    <div class="container">
-      <div class="search-wrap">
-        <span>🔎</span>
-        <input
-          id="searchInput"
-          type="search"
-          placeholder="جستجوی غذا... / Search meals..."
-          aria-label="جستجو در منو"
-          autocomplete="off"
-        />
-        <button id="clearSearch" type="button" aria-label="پاک کردن جستجو">×</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="categories-section">
-    <div class="container">
-      <div class="categories" id="categoryChips" role="tablist" aria-label="دسته‌بندی غذاها"></div>
-    </div>
-  </section>
-
-  <main class="menu-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-num">01</span>
-        <h3>منوی پوتو چیز</h3>
-        <span dir="ltr">Signature Menu</span>
-      </div>
-
-      <div class="menu-grid" id="menuGrid"></div>
-
-      <div class="empty-state" id="emptyState" hidden>
-        <div>😕</div>
-        <p>موردی پیدا نشد.</p>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="container footer-inner">
-      <p id="address">فردیس، بلوار شهدا، بین فلکه اول و دوم، خیابان ۱۳ غربی، پلاک ۴</p>
-      <p id="footerHours">ساعت کاری: ۱۰ صبح تا ۱۲ شب</p>
-      <p class="small">دسترسی آسان مشتریان با QR Code</p>
-    </div>
-  </footer>
-
-  <!-- پنل سفارش -->
-  <aside id="cartDrawer" class="cart-drawer" aria-hidden="true" aria-label="سبد سفارش">
-    <div class="cart-head">
-      <h3>سفارش شما <span dir="ltr">Your Order</span></h3>
-      <button id="cartClose" class="btn btn-outline icon-btn" type="button" aria-label="بستن سبد">×</button>
-    </div>
-
-    <div class="cart-customer" id="cartCustomer"></div>
-    <div class="cart-body" id="cartBody"></div>
-
-    <div class="cart-foot">
-      <div class="cart-total">
-        <div>جمع کل</div>
-        <span id="cartTotal">۰ تومان</span>
-      </div>
-      <button id="submitOrderBtn" class="btn btn-primary btn-big" type="button" disabled>📤 ثبت سفارش و دریافت شماره صف</button>
-      <button id="cartClear" class="btn btn-outline" type="button">🗑 پاک کردن سبد</button>
-      <p class="cart-note">پس از ثبت، شماره صف شما نمایش داده می‌شود. آن را به صندوقدار نشان دهید.</p>
-    </div>
-  </aside>
-
-  <!-- مودال خوش‌آمدگویی -->
-  <div id="welcomeModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <div class="modal-logo">🧀</div>
-      <h2>به پوتو چیز خوش آمدید</h2>
-      <p class="modal-sub">لطفاً یک گزینه را انتخاب کنید:</p>
-      <div class="modal-buttons">
-        <button id="welcomeMenuBtn" class="btn btn-primary btn-big" type="button">📖 نمایش منو</button>
-        <button id="welcomeOrderBtn" class="btn btn-outline btn-big" type="button">🛒 ثبت سفارش</button>
-      </div>
+      <p class="security-note">🔒 توکن فقط در مرورگر خود شما ذخیره می‌شود. آن را با کسی به اشتراک نگذارید.</p>
     </div>
   </div>
 
-  <!-- مودال اطلاعات مشتری -->
-  <div id="customerModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <div class="modal-logo">📝</div>
-      <h2>اطلاعات شما</h2>
-      <p class="modal-sub">برای ثبت سفارش، نام و شماره موبایل خود را وارد کنید.</p>
-
-      <form id="customerForm" class="customer-form" autocomplete="off">
-        <label>
-          <span>نام یا نام کاربری</span>
-          <input id="custName" type="text" placeholder="مثلاً علی" required />
-        </label>
-        <label>
-          <span>شماره موبایل</span>
-          <input id="custPhone" type="tel" placeholder="09xxxxxxxxx" inputmode="numeric" required />
-        </label>
-        <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary btn-big">ادامه به منو</button>
-          <button type="button" id="customerCancel" class="btn btn-outline btn-big">انصراف</button>
+  <!-- صفحه مدیریت -->
+  <div id="adminScreen" hidden>
+    <header class="admin-header">
+      <div class="admin-title">
+        <span class="admin-logo">🧀</span>
+        <div>
+          <h1>پنل مدیریت پوتو چیز</h1>
+          <p>تغییرات پس از ذخیره، طی ۱ تا ۲ دقیقه روی سایت می‌نشیند</p>
         </div>
-      </form>
+      </div>
+      <div class="admin-actions">
+        <a class="btn btn-outline" href="../index.html" target="_blank">مشاهده سایت</a>
+        <button id="logoutBtn" class="btn btn-outline" type="button">خروج</button>
+      </div>
+    </header>
+
+    <div id="statusBar" class="status" hidden></div>
+
+    <main class="admin-main">
+      <div id="categoriesWrap"></div>
+
+      <!-- مدیریت دسته‌بندی‌ها -->
+      <section class="cat-manage">
+        <h2>🗂️ مدیریت دسته‌بندی‌ها</h2>
+        <div class="add-grid">
+          <label>نام فارسی دسته
+            <input id="catLabelFa" type="text" placeholder="مثلاً پیتزا" />
+          </label>
+          <label>نام انگلیسی دسته
+            <input id="catLabelEn" type="text" placeholder="Pizza" />
+          </label>
+          <label>ایموجی دسته
+            <input id="catEmoji" type="text" value="🍕" />
+          </label>
+        </div>
+        <button id="addCatBtn" class="btn btn-primary" type="button">افزودن دسته</button>
+        <p class="muted small">برای حذف یک دسته، دکمه 🗑 کنار عنوان همان دسته را بزنید (فقط اگر دسته خالی باشد).</p>
+      </section>
+
+      <!-- افزودن محصول -->
+      <section class="add-section">
+        <h2>➕ افزودن محصول جدید</h2>
+        <div class="add-grid">
+          <label>دسته
+            <select id="addCategory"></select>
+          </label>
+          <label>نام فارسی
+            <input id="addTitleFa" type="text" />
+          </label>
+          <label>نام انگلیسی
+            <input id="addTitleEn" type="text" />
+          </label>
+          <label>قیمت (تومان)
+            <input id="addPrice" type="number" min="0" step="1000" />
+          </label>
+          <label>ایموجی
+            <input id="addEmoji" type="text" value="🍽️" />
+          </label>
+          <label class="full">توضیح
+            <input id="addDesc" type="text" />
+          </label>
+        </div>
+        <button id="addBtn" class="btn btn-primary" type="button">افزودن محصول</button>
+      </section>
+    </main>
+
+    <div class="save-bar">
+      <button id="saveBtn" class="btn btn-primary btn-big" type="button">💾 ذخیره و انتشار روی سایت</button>
     </div>
   </div>
 
-  <!-- مودال موفقیت سفارش -->
-  <div id="successModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-card success-card">
-      <div class="modal-logo">✅</div>
-      <h2>سفارش شما ثبت شد!</h2>
-      <div class="queue-box">
-        <div class="queue-label">شماره صف شما</div>
-        <div class="queue-number" id="successQueue">—</div>
-      </div>
-      <div class="order-meta">
-        <div><span>📅 تاریخ:</span> <span id="successDate">—</span></div>
-        <div><span>🕐 ساعت:</span> <span id="successTime">—</span></div>
-        <div><span>👤 نام:</span> <span id="successName">—</span></div>
-      </div>
-      <p class="modal-note">این صفحه را به صندوقدار نشان دهید تا سفارش شما ثبت شود.</p>
-      <button id="successClose" class="btn btn-primary btn-big" type="button">بستن</button>
-    </div>
-  </div>
-
-  <script src="js/menu-data.js"></script>
-  <script src="js/main.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
