@@ -2,7 +2,6 @@
    فایل منطق اصلی سایت POTO CHEESE
    ===================================================== */
 
-/* --- آدرس API سفارش‌گیری (Google Apps Script) --- */
 const ORDER_API = "https://script.google.com/macros/s/AKfycbz3ai1vo2eLzTBKEbHWbZnFoNdEvZbojG3orvyrgcEFkW_MTjRdMok_vDbvYWNKMpDT/exec";
 
 const state = {
@@ -15,6 +14,8 @@ const CUSTOMER_KEY = "poto_cheese_customer";
 
 let cart = loadCart();
 let customer = loadCustomer();
+let payConfig = null;
+let receiptFile = null;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -84,7 +85,7 @@ function loadCustomer() {
   try {
     const c = JSON.parse(raw);
     return c && c.name && c.phone ? c : null;
-  } catch {
+  } catch (error) {
     return null;
   }
 }
@@ -92,11 +93,6 @@ function loadCustomer() {
 function saveCustomer(c) {
   setStored(CUSTOMER_KEY, JSON.stringify(c));
   customer = c;
-}
-
-function forgetCustomer() {
-  clearStored(CUSTOMER_KEY);
-  customer = null;
 }
 
 /* ---------- ترتیب دسته‌ها ---------- */
@@ -123,14 +119,14 @@ function canOrder(item) {
   return isAvailable(item) && !isSoon(item);
 }
 
-/* ---------- سبد خرید ---------- */
+/* ---------- سبد ---------- */
 function loadCart() {
   const raw = getStored(CART_KEY);
   if (!raw) return {};
   try {
     const parsed = JSON.parse(raw);
     return typeof parsed === "object" && parsed !== null ? parsed : {};
-  } catch {
+  } catch (error) {
     return {};
   }
 }
@@ -233,12 +229,7 @@ function renderCustomerBar() {
       <span class="name">👤 ${escapeHtml(customer.name)}</span>
       <span class="phone">📱 ${escapeHtml(customer.phone)}</span>
     </div>
-    <button class="change" type="button">تغییر</button>
   `;
-  el.querySelector(".change").addEventListener("click", () => {
-    forgetCustomer();
-    openCustomerModal();
-  });
 }
 
 function renderCart() {
@@ -248,14 +239,9 @@ function renderCart() {
   const submitBtn = $("#submitOrderBtn");
   const entries = Object.entries(cart);
 
-  // فعال‌سازی/غیرفعال‌سازی دکمه ثبت سفارش
-  const canSubmit = entries.length > 0 && !!customer;
-  submitBtn.disabled = !canSubmit;
+  submitBtn.disabled = entries.length === 0;
   submitBtn.classList.remove("is-loading");
-  submitBtn.textContent = canSubmit ? "📤 ثبت سفارش و دریافت شماره صف" : "📤 ابتدا اطلاعات خود را وارد کنید";
-  if (entries.length > 0 && !customer) {
-    submitBtn.textContent = "📤 ابتدا اطلاعات خود را وارد کنید";
-  }
+  submitBtn.textContent = "📤 ثبت سفارش و دریافت شماره";
 
   if (entries.length === 0) {
     body.innerHTML = `
@@ -307,34 +293,101 @@ function renderCart() {
   $("#cartTotal").textContent = formatPrice(cartTotal());
 }
 
-/* ---------- مودال‌ها ---------- */
-function openWelcome() {
-  $("#welcomeModal").hidden = false;
-}
+/* ---------- مودال ثبت سفارش ---------- */
+function openCheckout() {
+  const modal = $("#checkoutModal");
+  $("#checkoutTotal").textContent = formatPrice(cartTotal());
 
-function closeWelcome() {
-  $("#welcomeModal").hidden = true;
-}
-
-function openCustomerModal() {
-  const modal = $("#customerModal");
-  modal.hidden = false;
   if (customer) {
     $("#custName").value = customer.name || "";
     $("#custPhone").value = customer.phone || "";
   }
+
+  resetReceipt();
+  modal.hidden = false;
+  loadPayConfig();
   setTimeout(() => $("#custName").focus(), 100);
 }
 
-function closeCustomerModal() {
-  $("#customerModal").hidden = true;
+function closeCheckout() {
+  $("#checkoutModal").hidden = true;
 }
 
+function currentPayMethod() {
+  const checked = document.querySelector('input[name="payMethod"]:checked');
+  return checked ? checked.value : "card";
+}
+
+function togglePayBoxes() {
+  const method = currentPayMethod();
+  $("#cardBox").hidden = method !== "card";
+  $("#cashBox").hidden = method !== "cash";
+}
+
+function resetReceipt() {
+  receiptFile = null;
+  $("#receiptFile").value = "";
+  $("#receiptPreview").hidden = true;
+  $("#receiptLabel").textContent = "📎 آپلود فیش واریزی";
+}
+
+async function loadPayConfig() {
+  if (payConfig) {
+    applyPayConfig();
+    return;
+  }
+  try {
+    const res = await fetch(ORDER_API + "?action=config");
+    const data = await res.json();
+    if (data.ok) {
+      payConfig = data;
+      applyPayConfig();
+    }
+  } catch (error) {
+    // اگر تنظیمات نیامد، جای‌نگهدارها می‌مانند
+  }
+}
+
+function applyPayConfig() {
+  $("#cardNumber").textContent = payConfig.cardNumber || "—";
+  $("#cardHolder").textContent = payConfig.cardHolder || "—";
+  $("#cardNote").textContent = payConfig.cardNote || "پس از واریز، فیش را آپلود کنید.";
+}
+
+/* ---------- تبدیل فیش به base64 ---------- */
+function fileToJpegBase64(file, maxW, quality) {
+  maxW = maxW || 1200;
+  quality = quality || 0.8;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl.split(",")[1]);
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---------- مودال موفقیت ---------- */
 function openSuccessModal(data) {
   $("#successQueue").textContent = toFa(data.queue);
   $("#successDate").textContent = toFa(data.date);
   $("#successTime").textContent = toFa(data.time);
-  $("#successName").textContent = customer ? customer.name : "—";
+  $("#successName").textContent = data.name || "—";
+  $("#successPay").textContent = data.payMethod === "card" ? "کارت به کارت 💳" : "پرداخت حضوری 🏪";
+  $("#successReceipt").textContent = data.payMethod === "card" ? "دریافت شد ✅" : "—";
   $("#successModal").hidden = false;
 }
 
@@ -342,14 +395,18 @@ function closeSuccessModal() {
   $("#successModal").hidden = true;
 }
 
-/* ---------- ارسال سفارش به API ---------- */
+/* ---------- ثبت سفارش ---------- */
 async function submitOrder() {
-  if (!customer) {
-    openCustomerModal();
+  const name = $("#custName").value.trim();
+  const phone = $("#custPhone").value.trim().replace(/\s/g, "");
+  const method = currentPayMethod();
+
+  if (!name) { alert("نام خود را وارد کنید."); return; }
+  if (!/^09\d{9}$/.test(phone)) { alert("شماره موبایل معتبر نیست. مثال: 09123456789"); return; }
+  if (method === "card" && !receiptFile) {
+    alert("برای پرداخت کارت‌به‌کارت، لطفاً فیش واریزی را آپلود کنید.\nیا روش «پرداخت حضوری» را انتخاب کنید.");
     return;
   }
-  const entries = Object.entries(cart);
-  if (entries.length === 0) return;
 
   const submitBtn = $("#submitOrderBtn");
   submitBtn.disabled = true;
@@ -357,12 +414,19 @@ async function submitOrder() {
   submitBtn.textContent = "⏳ در حال ثبت سفارش...";
 
   try {
+    let receiptBase64 = null;
+    if (method === "card" && receiptFile) {
+      receiptBase64 = await fileToJpegBase64(receiptFile);
+    }
+
     const payload = {
       action: "submit",
-      username: customer.name,
-      phone: customer.phone,
+      username: name,
+      phone: phone,
       items: cartSummaryText(),
-      total: cartTotal()
+      total: cartTotal(),
+      payMethod: method,
+      receiptBase64: receiptBase64
     };
 
     const res = await fetch(ORDER_API, {
@@ -375,29 +439,27 @@ async function submitOrder() {
     let data;
     try {
       data = JSON.parse(text);
-    } catch {
+    } catch (error) {
       throw new Error("پاسخ نامعتبر از سرور");
     }
 
-    if (!data.ok) {
-      throw new Error(data.error || "خطا در ثبت سفارش");
-    }
+    if (!data.ok) throw new Error(data.error || "خطا در ثبت سفارش");
 
-    // تاریخ و ساعت فعلی برای نمایش در مودال موفقیت
     const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    const h = String(now.getHours()).padStart(2, "0");
-    const mm = String(now.getMinutes()).padStart(2, "0");
+    const dateStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
 
+    saveCustomer({ name: name, phone: phone });
+
+    closeCheckout();
     openSuccessModal({
       queue: data.queue,
-      date: `${y}-${m}-${d}`,
-      time: `${h}:${mm}`
+      date: dateStr,
+      time: timeStr,
+      name: name,
+      payMethod: method
     });
 
-    // سبد را خالی کن
     cart = {};
     saveCart();
     updateBadge();
@@ -630,25 +692,16 @@ $("#categoryChips").addEventListener("click", (event) => {
 $("#menuGrid").addEventListener("click", (event) => {
   const button = event.target.closest("[data-add]");
   if (!button || button.disabled) return;
-
-  if (!customer) {
-    openCustomerModal();
-    return;
-  }
   addToCart(button.dataset.add);
 });
 
-$("#cartButton").addEventListener("click", () => {
-  if (!customer) {
-    openCustomerModal();
-  } else {
-    openCart();
-  }
-});
-
+$("#cartButton").addEventListener("click", openCart);
 $("#cartClose").addEventListener("click", closeCart);
 $("#cartClear").addEventListener("click", clearCart);
-$("#submitOrderBtn").addEventListener("click", submitOrder);
+$("#submitOrderBtn").addEventListener("click", () => {
+  if (Object.keys(cart).length === 0) return;
+  openCheckout();
+});
 
 $("#cartBody").addEventListener("click", (event) => {
   const inc = event.target.closest("[data-inc]");
@@ -659,28 +712,50 @@ $("#cartBody").addEventListener("click", (event) => {
   else if (remove) removeFromCart(remove.dataset.remove);
 });
 
-/* ---------- مودال‌ها: رویدادها ---------- */
-$("#welcomeMenuBtn").addEventListener("click", closeWelcome);
-$("#welcomeOrderBtn").addEventListener("click", () => {
-  closeWelcome();
-  openCustomerModal();
+/* ---------- رویدادهای مودال ثبت سفارش ---------- */
+document.querySelectorAll('input[name="payMethod"]').forEach((radio) => {
+  radio.addEventListener("change", togglePayBoxes);
 });
 
-$("#customerCancel").addEventListener("click", closeCustomerModal);
-$("#customerForm").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const name = $("#custName").value.trim();
-  const phone = $("#custPhone").value.trim();
+$("#copyCardBtn").addEventListener("click", () => {
+  const txt = ($("#cardNumber").textContent || "").replace(/\s/g, "");
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => {
+      alert("شماره کارت کپی شد.");
+    }).catch(() => {
+      alert(txt);
+    });
+  } else {
+    alert(txt);
+  }
+});
 
-  if (!name || !phone) return;
-  if (!/^09\d{9}$/.test(phone.replace(/\s/g, ""))) {
-    alert("شماره موبایل معتبر نیست. مثال: 09123456789");
+$("#receiptFile").addEventListener("change", (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) { resetReceipt(); return; }
+
+  if (file.size > 4 * 1024 * 1024) {
+    alert("حجم فیش زیاد است. لطفاً عکس کوچک‌تر از ۴ مگابایت انتخاب کنید.");
+    resetReceipt();
     return;
   }
 
-  saveCustomer({ name, phone: phone.replace(/\s/g, "") });
-  closeCustomerModal();
-  renderCart();
+  receiptFile = file;
+  $("#receiptLabel").textContent = "✅ فیش انتخاب شد: " + file.name;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const preview = $("#receiptPreview");
+    preview.src = reader.result;
+    preview.hidden = false;
+  };
+  reader.readAsDataURL(file);
+});
+
+$("#checkoutCancel").addEventListener("click", closeCheckout);
+$("#checkoutForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  submitOrder();
 });
 
 $("#successClose").addEventListener("click", closeSuccessModal);
@@ -688,8 +763,7 @@ $("#successClose").addEventListener("click", closeSuccessModal);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeCart();
-    closeWelcome();
-    closeCustomerModal();
+    closeCheckout();
     closeSuccessModal();
   }
 });
@@ -698,9 +772,4 @@ document.addEventListener("keydown", (event) => {
 updateBadge();
 renderChips();
 renderMenu();
-
-// اگر مشتری ذخیره‌شده نداریم، مودال خوش‌آمدگویی را نشان بده
-if (!customer) {
-  // کمی صبر می‌کنیم تا صفحه کامل لود شود
-  setTimeout(openWelcome, 400);
-}
+togglePayBoxes();

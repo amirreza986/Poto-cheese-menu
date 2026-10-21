@@ -1,7 +1,5 @@
 /* =====================================================
    تم برند POTO CHEESE
-   فونت فارسی: Vazirmatn (درشت و خوانا)
-   فونت انگلیسی نمایشی: Playfair Display
    ===================================================== */
 
 :root {
@@ -38,6 +36,11 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* مهم: عنصرهایی که hidden دارند واقعاً مخفی بمانند */
+[hidden] {
+  display: none !important;
 }
 
 html {
@@ -890,6 +893,368 @@ footer {
   opacity: 0.8;
 }
 
+/* ---------- مودال‌ها ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFade 0.25s ease;
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  position: relative;
+  width: min(460px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-logo {
+  font-size: 54px;
+  margin-bottom: 8px;
+}
+
+.modal-card h2 {
+  margin: 4px 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.modal-sub {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.modal-buttons {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-big {
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* ---------- فرم مشتری / checkout ---------- */
+.customer-form {
+  display: grid;
+  gap: 12px;
+  text-align: right;
+}
+
+.customer-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.customer-form input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 15px;
+  direction: rtl;
+}
+
+.customer-form input[type="tel"] {
+  direction: ltr;
+  text-align: right;
+  font-family: var(--font-en);
+  letter-spacing: 1px;
+}
+
+/* ---------- روش‌های پرداخت ---------- */
+.pay-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pay-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: var(--surface-2);
+  transition: 0.15s ease;
+}
+
+.pay-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.pay-icon {
+  font-size: 20px;
+}
+
+.pay-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pay-option:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ---------- جعبه کارت ---------- */
+.card-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.card-num-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-icon {
+  font-size: 24px;
+}
+
+.card-number {
+  font-family: var(--font-en);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  direction: ltr;
+  color: var(--accent);
+}
+
+.copy-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.card-holder {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.card-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.receipt-upload {
+  display: block;
+}
+
+.receipt-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--accent);
+  color: var(--accent);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.receipt-label:hover {
+  background: var(--accent-soft);
+}
+
+.receipt-preview {
+  max-width: 130px;
+  max-height: 130px;
+  border-radius: 10px;
+  margin: 4px auto 0;
+  border: 1px solid var(--border);
+}
+
+.cash-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.cash-box p {
+  margin: 0;
+}
+
+.checkout-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 800;
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.checkout-total strong {
+  color: var(--accent);
+}
+
+/* ---------- مودال موفقیت ---------- */
+.queue-box {
+  margin: 14px 0;
+  padding: 18px 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: var(--on-accent);
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.queue-label {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.queue-number {
+  font-family: var(--font-en);
+  font-size: 68px;
+  font-weight: 900;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.order-meta {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  margin-bottom: 12px;
+}
+
+.order-meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.order-meta div span:first-child {
+  color: var(--muted);
+}
+
+.modal-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 14px;
+}
+
+/* ---------- اطلاعات مشتری در سبد ---------- */
+.cart-customer {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-customer .info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cart-customer .info .name {
+  font-weight: 800;
+}
+
+.cart-customer .info .phone {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font-en);
+  direction: ltr;
+}
+
+.cart-customer .change {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.cart-customer:empty {
+  display: none;
+}
+
+#submitOrderBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#submitOrderBtn.is-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 /* ---------- ریسپانسیو ---------- */
 @media (max-width: 640px) {
   .categories {
@@ -951,6 +1316,19 @@ footer {
   .card.coming-soon .photo::after {
     font-size: 44px;
   }
+
+  .modal-card {
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .queue-number {
+    font-size: 56px;
+  }
+
+  .pay-methods {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media print {
@@ -966,233 +1344,5 @@ footer {
   body {
     background: #fff;
     color: #000;
-  }
-}
-/* =====================================================
-   مودال‌های سفارش‌گیری
-   ===================================================== */
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: modalFade 0.25s ease;
-}
-
-@keyframes modalFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-}
-
-.modal-card {
-  position: relative;
-  width: min(440px, 100%);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalPop {
-  from { transform: scale(0.9); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-.modal-logo {
-  font-size: 54px;
-  margin-bottom: 8px;
-}
-
-.modal-card h2 {
-  margin: 4px 0 8px;
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.modal-sub {
-  margin: 0 0 20px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.modal-buttons {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.btn-big {
-  padding: 14px 20px;
-  font-size: 16px;
-  font-weight: 800;
-}
-
-/* ---------- فرم اطلاعات مشتری ---------- */
-
-.customer-form {
-  display: grid;
-  gap: 12px;
-  text-align: right;
-}
-
-.customer-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.customer-form input {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font: inherit;
-  font-size: 15px;
-  direction: rtl;
-}
-
-.customer-form input[type="tel"] {
-  direction: ltr;
-  text-align: right;
-  font-family: var(--font-en);
-  letter-spacing: 1px;
-}
-
-/* ---------- مودال موفقیت ---------- */
-
-.success-card .modal-logo {
-  color: var(--accent);
-}
-
-.queue-box {
-  margin: 16px 0;
-  padding: 20px 16px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: var(--on-accent);
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
-}
-
-.queue-label {
-  font-size: 13px;
-  font-weight: 700;
-  opacity: 0.9;
-}
-
-.queue-number {
-  font-family: var(--font-en);
-  font-size: 72px;
-  font-weight: 900;
-  line-height: 1;
-  margin-top: 6px;
-}
-
-.order-meta {
-  background: var(--surface-2);
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 14px;
-  display: grid;
-  gap: 4px;
-  text-align: right;
-  margin-bottom: 12px;
-}
-
-.order-meta div {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.order-meta div span:first-child {
-  color: var(--muted);
-}
-
-.modal-note {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 6px 0 14px;
-}
-
-/* ---------- اطلاعات مشتری در سبد ---------- */
-
-.cart-customer {
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.cart-customer .info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cart-customer .info .name {
-  font-weight: 800;
-}
-
-.cart-customer .info .phone {
-  color: var(--muted);
-  font-size: 12px;
-  font-family: var(--font-en);
-  direction: ltr;
-}
-
-.cart-customer .change {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 4px 10px;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.cart-customer:empty {
-  display: none;
-}
-
-#submitOrderBtn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-#submitOrderBtn.is-loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-@media (max-width: 640px) {
-  .modal-card {
-    padding: 26px 18px;
-    border-radius: 20px;
-  }
-
-  .queue-number {
-    font-size: 56px;
   }
 }

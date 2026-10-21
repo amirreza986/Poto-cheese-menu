@@ -127,35 +127,21 @@
         <div>جمع کل</div>
         <span id="cartTotal">۰ تومان</span>
       </div>
-      <button id="submitOrderBtn" class="btn btn-primary btn-big" type="button" disabled>📤 ثبت سفارش و دریافت شماره صف</button>
+      <button id="submitOrderBtn" class="btn btn-primary btn-big" type="button" disabled>📤 ثبت سفارش و دریافت شماره</button>
       <button id="cartClear" class="btn btn-outline" type="button">🗑 پاک کردن سبد</button>
-      <p class="cart-note">پس از ثبت، شماره صف شما نمایش داده می‌شود. آن را به صندوقدار نشان دهید.</p>
+      <p class="cart-note">پس از ثبت، شماره سفارش شما نمایش داده می‌شود. آن را به صندوقدار نشان دهید.</p>
     </div>
   </aside>
 
-  <!-- مودال خوش‌آمدگویی -->
-  <div id="welcomeModal" class="modal" hidden>
+  <!-- مودال ثبت سفارش (اطلاعات + پرداخت) -->
+  <div id="checkoutModal" class="modal" hidden>
     <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <div class="modal-logo">🧀</div>
-      <h2>به پوتو چیز خوش آمدید</h2>
-      <p class="modal-sub">لطفاً یک گزینه را انتخاب کنید:</p>
-      <div class="modal-buttons">
-        <button id="welcomeMenuBtn" class="btn btn-primary btn-big" type="button">📖 نمایش منو</button>
-        <button id="welcomeOrderBtn" class="btn btn-outline btn-big" type="button">🛒 ثبت سفارش</button>
-      </div>
-    </div>
-  </div>
+    <div class="modal-card checkout-card">
+      <div class="modal-logo">🧾</div>
+      <h2>ثبت سفارش</h2>
+      <p class="modal-sub">اطلاعات و روش پرداخت را مشخص کنید.</p>
 
-  <!-- مودال اطلاعات مشتری -->
-  <div id="customerModal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <div class="modal-logo">📝</div>
-      <h2>اطلاعات شما</h2>
-      <p class="modal-sub">برای ثبت سفارش، نام و شماره موبایل خود را وارد کنید.</p>
-
-      <form id="customerForm" class="customer-form" autocomplete="off">
+      <form id="checkoutForm" class="customer-form" autocomplete="off">
         <label>
           <span>نام یا نام کاربری</span>
           <input id="custName" type="text" placeholder="مثلاً علی" required />
@@ -164,9 +150,48 @@
           <span>شماره موبایل</span>
           <input id="custPhone" type="tel" placeholder="09xxxxxxxxx" inputmode="numeric" required />
         </label>
+
+        <div class="pay-methods">
+          <label class="pay-option">
+            <input type="radio" name="payMethod" value="card" checked />
+            <span class="pay-icon">💳</span>
+            <span class="pay-label">کارت به کارت</span>
+          </label>
+          <label class="pay-option">
+            <input type="radio" name="payMethod" value="cash" />
+            <span class="pay-icon">🏪</span>
+            <span class="pay-label">پرداخت حضوری</span>
+          </label>
+        </div>
+
+        <div id="cardBox" class="card-box">
+          <div class="card-num-row">
+            <span class="card-icon">💳</span>
+            <span id="cardNumber" class="card-number">—</span>
+            <button type="button" id="copyCardBtn" class="copy-btn">کپی</button>
+          </div>
+          <div id="cardHolder" class="card-holder">—</div>
+          <p id="cardNote" class="card-note">پس از واریز، فیش را آپلود کنید.</p>
+
+          <label class="receipt-upload">
+            <input id="receiptFile" type="file" accept="image/*" hidden />
+            <span id="receiptLabel" class="receipt-label">📎 آپلود فیش واریزی</span>
+          </label>
+          <img id="receiptPreview" class="receipt-preview" hidden alt="پیش‌نمایش فیش" />
+        </div>
+
+        <div id="cashBox" class="cash-box" hidden>
+          <p>🏪 مبلغ سفارش را هنگام تحویل در رستوران پرداخت کنید.</p>
+        </div>
+
+        <div class="checkout-total">
+          <span>جمع کل:</span>
+          <strong id="checkoutTotal">۰ تومان</strong>
+        </div>
+
         <div class="modal-buttons">
-          <button type="submit" class="btn btn-primary btn-big">ادامه به منو</button>
-          <button type="button" id="customerCancel" class="btn btn-outline btn-big">انصراف</button>
+          <button type="submit" class="btn btn-primary btn-big">✅ ثبت نهایی سفارش</button>
+          <button type="button" id="checkoutCancel" class="btn btn-outline btn-big">انصراف</button>
         </div>
       </form>
     </div>
@@ -179,13 +204,15 @@
       <div class="modal-logo">✅</div>
       <h2>سفارش شما ثبت شد!</h2>
       <div class="queue-box">
-        <div class="queue-label">شماره صف شما</div>
+        <div class="queue-label">شماره ثبت سفارش</div>
         <div class="queue-number" id="successQueue">—</div>
       </div>
       <div class="order-meta">
         <div><span>📅 تاریخ:</span> <span id="successDate">—</span></div>
         <div><span>🕐 ساعت:</span> <span id="successTime">—</span></div>
         <div><span>👤 نام:</span> <span id="successName">—</span></div>
+        <div><span>💳 روش پرداخت:</span> <span id="successPay">—</span></div>
+        <div><span>🧾 فیش:</span> <span id="successReceipt">—</span></div>
       </div>
       <p class="modal-note">این صفحه را به صندوقدار نشان دهید تا سفارش شما ثبت شود.</p>
       <button id="successClose" class="btn btn-primary btn-big" type="button">بستن</button>
