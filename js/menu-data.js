@@ -388,7 +388,7 @@ const items = [
     "titleFa": "آب سودا",
     "titleEn": "Soda Water",
     "description": "آب گازدار",
-    "price": 75000,
+    "price": 95000,
     "image": "images/drinks/ab-soda.webp",
     "emoji": "🫧",
     "color1": "#203040",
